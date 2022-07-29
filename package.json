@@ -37,7 +37,7 @@
     "standard": "^17.0.0"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.js": [
       "npx prettier --write",
       "standard --fix"
     ]
