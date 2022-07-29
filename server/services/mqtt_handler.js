@@ -1,5 +1,5 @@
 import mqtt from 'mqtt'
-import Measurement from './models/measurement.model'
+import Measurement from '../models/measurement.model.js'
 
 class MqttHandler {
   constructor () {
