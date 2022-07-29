@@ -1,15 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
-const UserSchema = new Schema({
-  temperature: {
-    type: String,
+const MeasurementSchema = new Schema(
+  {
+    temperature: {
+      type: Number
+    },
+    humidity: {
+      type: Number
+    }
   },
-  humidity: {
-    type: String,
-  },
-  updated: Date,
-});
+  { timestamps: true }
+)
 
-export default mongoose.model('User', UserSchema);
+export default mongoose.model('Measurement', MeasurementSchema)
