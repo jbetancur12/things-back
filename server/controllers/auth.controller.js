@@ -14,7 +14,7 @@ const signin = async (req, res) => {
         .send({ error: "Email and password don't match." });
     }
 
-    const token = jwt.sign({ exp: Math.floor(Date.now() / 1000) + (2 * 60), _id: user._id }, config.jwtSecret);
+    const token = jwt.sign({ exp: Math.floor(Date.now() / 1000) + (60 * 60), _id: user._id }, config.jwtSecret);
 
     res.cookie('t', token, { expire: new Date() + 9999 });
 
@@ -24,6 +24,7 @@ const signin = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role
       },
     });
   } catch (err) {
