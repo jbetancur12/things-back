@@ -4,6 +4,7 @@ import cors from 'cors'
 import userRoutes from './server/routes/user.routes.js'
 import authRoutes from './server/routes/auth.routes.js'
 import sensorRoutes from './server/routes/sensor.routes.js'
+import thingRoutes from './server/routes/thing.routes.js'
 
 const app = express()
 /* ... configure express ... */
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 app.use('/', userRoutes)
 app.use('/', authRoutes)
 app.use('/', sensorRoutes)
+app.use('/', thingRoutes)
 
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
