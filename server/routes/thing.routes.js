@@ -9,4 +9,10 @@ router
   .get(thingController.list)
   .post(thingController.create)
 
+router
+  .route('/api/things/:thingId')
+  .put(thingController.update)
+  .delete(thingController.remove)
+
+router.param('thingId', thingController.thingByID)
 export default router
