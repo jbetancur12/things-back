@@ -9,6 +9,8 @@ router
   .get(thingController.list)
   .post(thingController.create)
 
+router.route('/api/things/user/:userId').get(thingController.findByUserId)
+
 router
   .route('/api/things/:thingId')
   .put(thingController.update)

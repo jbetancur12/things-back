@@ -17,6 +17,10 @@ const ThingSchema = new Schema(
     },
     googleMapsUrl: {
       type: String
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     }
   },
   { timestamps: true }

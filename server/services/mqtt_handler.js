@@ -43,7 +43,6 @@ class MqttHandler {
         const measure = new Measurement(values)
         try {
           await measure.save()
-          console.log('Measure Save!')
         } catch (err) {
           console.log('Error;', err)
         }
