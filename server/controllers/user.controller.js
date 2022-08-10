@@ -18,8 +18,14 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    const users = await User.find()
-    res.json(users)
+    if (!req.query.email) {
+      const users = await User.find({ ...req.query })
+      res.json(users)
+    } else {
+      const email = req.query.email
+      const users = await User.find({ email: new RegExp(email, 'i') }).exec()
+      res.json(users)
+    }
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)
@@ -40,6 +46,18 @@ const userByID = async (req, res, next, id) => {
   } catch (err) {
     return res.status('400').json({
       error: 'Could not retrieve user'
+    })
+  }
+}
+
+const userByName = async (req, res) => {
+  try {
+    const email = req.params.email
+    const users = await User.find({ email: new RegExp(email, 'i') }).exec()
+    res.json(users)
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
     })
   }
 }
@@ -84,4 +102,13 @@ const userBoard = (req, res) => {
   res.status(200).send('User Content.')
 }
 
-export default { create, userByID, read, list, remove, update, userBoard }
+export default {
+  create,
+  userByID,
+  read,
+  list,
+  remove,
+  update,
+  userBoard,
+  userByName
+}
