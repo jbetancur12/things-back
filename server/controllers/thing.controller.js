@@ -1,6 +1,6 @@
 import Thing from '../models/thing.model.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
-import extend from 'lodash/extend.js'
+import { extend } from 'lodash'
 
 const thingByID = async (req, res, next, id) => {
   try {
@@ -37,7 +37,7 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   try {
-    const things = await Thing.find()
+    const things = await Thing.find({ ...req.query })
     res.json(things)
   } catch (err) {
     return res.status(400).json({
