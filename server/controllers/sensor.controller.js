@@ -6,10 +6,15 @@ const getByPeriod = async (req, res) => {
     const measures = await Measurement.aggregate([
       {
         $match: {
-          createdAt: {
-            $gte: new Date(req.query.startDate),
-            $lte: new Date(req.query.endDate)
-          }
+          $and: [
+            {
+              createdAt: {
+                $gte: new Date(req.query.startDate),
+                $lte: new Date(req.query.endDate)
+              }
+            },
+            { mac: req.query.mac }
+          ]
         }
       },
       {
