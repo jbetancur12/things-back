@@ -38,7 +38,8 @@ class MqttHandler {
         const topicParsed = JSON.parse(message.toString())
         const values = {
           temperature: topicParsed.temperature,
-          humidity: topicParsed.humidity
+          humidity: topicParsed.humidity,
+          mac: topicParsed.mac
         }
         const measure = new Measurement(values)
         try {

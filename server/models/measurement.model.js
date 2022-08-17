@@ -9,6 +9,9 @@ const MeasurementSchema = new Schema(
     },
     humidity: {
       type: Number
+    },
+    mac: {
+      type: String
     }
   },
   { timestamps: true }
