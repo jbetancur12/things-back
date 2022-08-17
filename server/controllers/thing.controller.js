@@ -1,6 +1,6 @@
 import Thing from '../models/thing.model.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
-import { extend } from 'lodash'
+import extend from 'lodash/extend.js'
 
 const thingByID = async (req, res, next, id) => {
   try {
