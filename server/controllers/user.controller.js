@@ -3,6 +3,7 @@ import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
 
 const create = async (req, res) => {
+  console.log(req.body)
   const user = new User(req.body)
   try {
     await user.save()
@@ -23,7 +24,9 @@ const list = async (req, res) => {
       res.json(users)
     } else {
       const email = req.query.email
-      const users = await User.find({ email: new RegExp(email, 'i') }).exec()
+      const users = await User.find({
+        'email.name': new RegExp(email, 'i')
+      }).exec()
       res.json(users)
     }
   } catch (err) {
@@ -53,7 +56,10 @@ const userByID = async (req, res, next, id) => {
 const userByName = async (req, res) => {
   try {
     const email = req.params.email
-    const users = await User.find({ email: new RegExp(email, 'i') }).exec()
+
+    const users = await User.find({
+      'email.name': new RegExp(email, 'i')
+    }).exec()
     res.json(users)
   } catch (err) {
     return res.status(400).json({
