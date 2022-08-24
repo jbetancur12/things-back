@@ -5,7 +5,7 @@ import extend from 'lodash/extend.js'
 const thingByID = async (req, res, next, id) => {
   try {
     const thing = await Thing.findById(id)
-
+    console.log('====>', thing)
     if (!thing) {
       return res.status('400').json({
         error: 'Thing not found'
@@ -74,6 +74,7 @@ const findByUserId = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const thing = req.thing
+
     const deletedThing = await thing.remove()
     res.json(deletedThing)
   } catch (err) {

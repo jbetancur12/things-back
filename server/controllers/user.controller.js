@@ -39,6 +39,7 @@ const list = async (req, res) => {
 const userByID = async (req, res, next, id) => {
   try {
     const user = await User.findById(id)
+    console.log('ID=>', user)
     if (!user) {
       return res.status('400').json({
         error: 'User not found'
