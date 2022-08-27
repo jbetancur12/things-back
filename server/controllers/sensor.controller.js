@@ -36,6 +36,7 @@ const getByPeriod = async (req, res) => {
     console.log(measures)
     res.json(measures)
   } catch (err) {
+    console.log(err)
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)
     })
