@@ -1,11 +1,12 @@
 import mqtt from 'mqtt'
 import Measurement from '../models/measurement.model.js'
+import 'dotenv/config'
 
 class MqttHandler {
   constructor () {
     this.mqttClient = null
-    this.host = 'mqtt://192.168.0.6:1883'
-    this.username = '' // mqtt credentials if these are needed to connect
+    this.host = process.env.MQTT_HOST || "mqtt://192.168.0.6:1883'"
+    this.username = process.env.USER || '' // mqtt credentials if these are needed to connect
     this.password = ''
   }
 
