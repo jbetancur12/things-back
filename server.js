@@ -29,9 +29,5 @@ app.listen(config.port, (err) => {
     console.log(err)
   }
   console.info('Server started on port %s.', config.port)
-  mqttClient.subscribe([
-    'topic_sensor_temperature',
-    'topic_sensor_humidity',
-    'json'
-  ])
+  mqttClient.subscribe(['json'])
 })
