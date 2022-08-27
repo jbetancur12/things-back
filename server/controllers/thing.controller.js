@@ -5,7 +5,6 @@ import extend from 'lodash/extend.js'
 const thingByID = async (req, res, next, id) => {
   try {
     const thing = await Thing.findById(id)
-    console.log('====>', thing)
     if (!thing) {
       return res.status('400').json({
         error: 'Thing not found'
