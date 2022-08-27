@@ -2,7 +2,6 @@ import Measurement from '../models/measurement.model.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
 
 const getByPeriod = async (req, res) => {
-  console.log(req.query)
   try {
     const measures = await Measurement.aggregate([
       {
@@ -33,6 +32,8 @@ const getByPeriod = async (req, res) => {
       },
       { $sort: { _id: 1 } }
     ])
+
+    console.log(measures)
     res.json(measures)
   } catch (err) {
     return res.status(400).json({
