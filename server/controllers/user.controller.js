@@ -3,7 +3,6 @@ import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
 
 const create = async (req, res) => {
-  console.log(req.body)
   const user = new User(req.body)
   try {
     await user.save()
@@ -39,7 +38,6 @@ const list = async (req, res) => {
 const userByID = async (req, res, next, id) => {
   try {
     const user = await User.findById(id)
-    console.log('ID=>', user)
     if (!user) {
       return res.status('400').json({
         error: 'User not found'
