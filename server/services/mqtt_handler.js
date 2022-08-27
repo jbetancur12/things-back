@@ -4,7 +4,6 @@ import 'dotenv/config'
 
 class MqttHandler {
   constructor () {
-    console.log(process.env.MQTT_USER)
     this.mqttClient = null
     this.host = process.env.MQTT_HOST || "mqtt://192.168.0.6:1883'"
     this.username = process.env.MQTT_USER || '' // mqtt credentials if these are needed to connect
