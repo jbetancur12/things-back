@@ -40,7 +40,8 @@ class MqttHandler {
         const values = {
           temperature: topicParsed.temperature,
           humidity: topicParsed.humidity,
-          mac: topicParsed.mac
+          // mac: topicParsed.mac,
+          mac: 'AA:BB:CC:DD:EE:FF'
         }
         const measure = new Measurement(values)
         try {
