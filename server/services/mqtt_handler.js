@@ -5,9 +5,9 @@ import 'dotenv/config'
 class MqttHandler {
   constructor () {
     this.mqttClient = null
-    this.host = process.env.MQTT_HOST || "mqtt://192.168.0.6:1883'"
-    this.username = process.env.MQTT_USER || '' // mqtt credentials if these are needed to connect
-    this.password = ''
+    this.host = process.env.MQTT_HOST || "mqtt://134.209.118.100:1883'"
+    this.username = process.env.MQTT_USER || 'jorge' // mqtt credentials if these are needed to connect
+    this.password = 'jorge'
   }
 
   connect () {
@@ -37,11 +37,16 @@ class MqttHandler {
     this.mqttClient.on('message', async function (topic, message) {
       if (topic === 'json') {
         const topicParsed = JSON.parse(message.toString())
+        console.log(
+          '🚀 ~ file: mqtt_handler.js:40 ~ MqttHandler ~ topicParsed:',
+          topicParsed
+        )
+
         const values = {
           temperature: topicParsed.temperature,
           humidity: topicParsed.humidity,
-          // mac: topicParsed.mac,
-          mac: 'AA:BB:CC:DD:EE:FF'
+          mac: topicParsed.mac
+          // mac: topicParsed.id
         }
         const measure = new Measurement(values)
         try {
