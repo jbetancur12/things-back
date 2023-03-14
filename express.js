@@ -18,6 +18,7 @@ app.use(helmet())
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to bezkoder application.' })
 })
+
 app.use('/', userRoutes)
 app.use('/', authRoutes)
 app.use('/', sensorRoutes)
