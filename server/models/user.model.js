@@ -1,10 +1,10 @@
 import mongoose from 'mongoose'
 import crypto from 'crypto'
 
-const rolesValidos = {
-  values: ['ADMIN_ROLE', 'USER_ROLE'],
-  message: '{VALUE} no es un rol válido'
-}
+// const rolesValidos = {
+//   values: ['ADMIN_ROLE', 'USER_ROLE'],
+//   message: '{VALUE} no es un rol válido'
+// }
 
 const Schema = mongoose.Schema
 
@@ -29,17 +29,17 @@ const UserSchema = new Schema({
     // required: 'userName is required',
   },
   email: {
-    name: {
-      type: String,
-      trim: true,
-      unique: 'Email already exists',
-      match: [/.+@.+\..+/, 'Please fill a valid email address'],
-      required: 'Email is required'
-    },
-    verified: {
-      type: Boolean,
-      default: false
-    }
+    // name: {
+    type: String,
+    trim: true,
+    unique: 'Email already exists',
+    match: [/.+@.+\..+/, 'Please fill a valid email address'],
+    required: 'Email is required'
+    // },
+    // verified: {
+    //   type: Boolean,
+    //   default: false
+    // }
   },
   phone: {
     number: {
@@ -86,11 +86,17 @@ const UserSchema = new Schema({
     trim: true
     // required: 'ZipCode is required'
   },
-  role: {
-    type: String,
-    default: 'USER_ROLE',
-    enum: rolesValidos
-  },
+  roles: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Role'
+    }
+  ],
+  //   roles: {
+  //     type: String,
+  //     default: 'USER_ROLE',
+  //     enum: rolesValidos
+  //   },
   hashed_password: {
     type: String,
     required: 'Password is required'
