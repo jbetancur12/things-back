@@ -8,4 +8,6 @@ router.route('/api/sensor/data').get(sensorController.getByPeriod)
 
 router.route('/api/sensor/maxmin').get(sensorController.getMaxMin)
 
+router.route('/api/sensor/excel').get(sensorController.excel)
+
 export default router
