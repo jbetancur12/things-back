@@ -1,19 +1,60 @@
-import User from '../models/user.model.js'
+import db from '../models/index.js'
+
 import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
 
-const create = async (req, res) => {
+const User = db.user
+const Role = db.role
+
+const create = (req, res) => {
   const user = new User(req.body)
-  try {
-    await user.save()
-    return res.status(200).json({
-      message: 'Successfully signed up!'
-    })
-  } catch (err) {
-    return res.status(400).json({
-      error: errorHandler.getErrorMessage(err)
-    })
-  }
+  user.save((err, user) => {
+    if (err) {
+      res.status(500).json({ message: err })
+      return
+    }
+
+    if (req.body.roles) {
+      Role.find(
+        {
+          name: { $in: req.body.roles }
+        },
+        (err, roles) => {
+          if (err) {
+            res.status(500).json({ message: err })
+            return
+          }
+
+          user.roles = roles.map((role) => role._id)
+          user.save((err) => {
+            if (err) {
+              res.status(500).json({ message: err })
+              return
+            }
+
+            res
+              .status(200)
+              .json({ message: 'User was registered successfully!' })
+          })
+        }
+      )
+    } else {
+      Role.findOne({ name: 'USER_ROLE' }, (err, role) => {
+        if (err) {
+          res.status(500).json({ message: err })
+          return
+        }
+        user.roles = [role._id]
+        user.save((err) => {
+          if (err) {
+            res.status(500).json({ message: err })
+            return
+          }
+          res.status(200).json({ message: 'User was registered successfully!' })
+        })
+      })
+    }
+  })
 }
 
 const list = async (req, res) => {
@@ -24,7 +65,7 @@ const list = async (req, res) => {
     } else {
       const email = req.query.email
       const users = await User.find({
-        'email.name': new RegExp(email, 'i')
+        email: new RegExp(email, 'i')
       }).exec()
       res.json(users)
     }
@@ -104,7 +145,7 @@ const remove = async (req, res) => {
 }
 
 const userBoard = (req, res) => {
-  res.status(200).send('User Content.')
+  res.status(200).json('User Content.')
 }
 
 export default {
