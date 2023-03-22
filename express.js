@@ -6,6 +6,7 @@ import userRoutes from './server/routes/user.routes.js'
 import authRoutes from './server/routes/auth.routes.js'
 import sensorRoutes from './server/routes/sensor.routes.js'
 import thingRoutes from './server/routes/thing.routes.js'
+import customerRoutes from './server/routes/customer.routes.js'
 
 const app = express()
 /* ... configure express ... */
@@ -23,6 +24,7 @@ app.use('/', userRoutes)
 app.use('/', authRoutes)
 app.use('/', sensorRoutes)
 app.use('/', thingRoutes)
+app.use('/', customerRoutes)
 
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {

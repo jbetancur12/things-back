@@ -19,10 +19,6 @@ const UserSchema = new Schema({
     trim: true,
     required: 'Last Name is required'
   },
-  imgUrl: {
-    type: String,
-    trim: true
-  },
   userName: {
     type: String,
     trim: true
@@ -41,50 +37,10 @@ const UserSchema = new Schema({
     //   default: false
     // }
   },
-  phone: {
-    number: {
-      type: String,
-      trim: true
-      // required: 'Phone is required',
-    },
-    verified: {
-      type: Boolean,
-      default: false
-    }
-  },
-  birthday: {
-    type: String,
-    trim: true
-    // required: 'Birthday is required',
-  },
   lang: {
     type: String,
     enum: ['en', 'de', 'es']
     // required: 'Language is required',
-  },
-  country: {
-    type: String,
-    trim: true
-    // required: 'Country is required',
-  },
-  city: {
-    type: String,
-    trim: true,
-    required: 'City is required'
-  },
-  address1: {
-    type: String,
-    trim: true,
-    required: 'Address is required'
-  },
-  address2: {
-    type: String,
-    trim: true
-  },
-  zipcode: {
-    type: Number,
-    trim: true
-    // required: 'ZipCode is required'
   },
   roles: [
     {
@@ -92,11 +48,10 @@ const UserSchema = new Schema({
       ref: 'Role'
     }
   ],
-  //   roles: {
-  //     type: String,
-  //     default: 'USER_ROLE',
-  //     enum: rolesValidos
-  //   },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer'
+  },
   hashed_password: {
     type: String,
     required: 'Password is required'
