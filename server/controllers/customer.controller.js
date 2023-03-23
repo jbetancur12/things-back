@@ -40,8 +40,16 @@ const find = async (req, res) => {
  */
 const list = async (req, res) => {
   try {
-    const customers = await Customer.find({ ...req.query })
-    res.json(customers)
+    if (!req.query.name) {
+      const customers = await Customer.find({ ...req.query })
+      res.json(customers)
+    } else {
+      const name = req.query.name
+      const customers = await Customer.find({
+        name: new RegExp(name, 'i')
+      }).exec()
+      res.json(customers)
+    }
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)
