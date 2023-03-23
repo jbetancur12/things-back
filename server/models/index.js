@@ -5,6 +5,7 @@ import thing from './thing.model.js'
 import refreshToken from './refreshToken.model.js'
 import measurement from './measurement.model.js'
 import customer from './customer.model.js'
+import variable from './variable.model.js'
 mongoose.Promise = global.Promise
 
 const db = {}
@@ -17,6 +18,7 @@ db.thing = thing
 db.measurement = measurement
 db.refreshToken = refreshToken
 db.customer = customer
+db.variable = variable
 
 db.ROLES = ['USER_ROLE', 'ADMIN_ROLE', 'MODERATOR_ROLE']
 
