@@ -7,7 +7,7 @@ class MqttHandler {
     this.mqttClient = null
     this.host = process.env.MQTT_HOST || "mqtt://134.209.118.100:1883'"
     this.username = process.env.MQTT_USER || 'jorge' // mqtt credentials if these are needed to connect
-    this.password = 'jorge'
+    this.password = process.env.MQTT_PASSWORD || 'jorge'
   }
 
   connect () {
