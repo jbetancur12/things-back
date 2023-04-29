@@ -57,7 +57,13 @@ const CustomerSchema = new Schema(
       type: Number,
       trim: true
       // required: 'ZipCode is required'
-    }
+    },
+    users: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ]
   },
   { timestamps: true }
 )
