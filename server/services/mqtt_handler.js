@@ -38,7 +38,11 @@ class MqttHandler {
       if (topic === 'test') {
         console.log(message)
       }
-      if (topic === 'json') console.log(message.toString())
+      //   if (topic === 'json') console.log(message.toString())
+      if (topic === 'jsonv2') {
+        const plot = message.toString().split('/')
+        console.log(plot)
+      }
       if (topic === 'jsonv1') {
         const topicParsed = JSON.parse(message.toString())
         // console.log(
