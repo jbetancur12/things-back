@@ -60,6 +60,9 @@ const UserSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
+  otpCode: {
+    type: String
+  },
   hashed_password: {
     type: String,
     required: 'Password is required'

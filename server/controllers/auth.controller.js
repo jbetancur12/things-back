@@ -3,6 +3,47 @@ import jwt from 'jsonwebtoken'
 import { expressjwt } from 'express-jwt'
 import config from './../../config/config.js'
 import RefreshToken from '../models/refreshToken.model.js'
+import Email from '../helpers/email.js'
+
+const recoverPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      email: req.body.email
+    })
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ message: 'El correo electronico no existe' })
+    }
+
+    // const otpCode = `${Math.floor(1000 + Math.random() * 9000)}`
+    // user.otpCode = otpCode
+    const { verificationCode } = user.createVerificationCode()
+    user.verificationCode = verificationCode
+    await user.save()
+
+    const redirectUrl = `${process.env.FRONTEND_URL}/auth/new-password?code=${verificationCode}`
+
+    try {
+      await new Email(user, redirectUrl).sendVerificationCode(
+        'resetPassword',
+        'Reset Password'
+      )
+      res.status(201).json({
+        status: 'success',
+        message: 'An email with a verification code has been sent to your email'
+      })
+    } catch (error) {
+      user.verificationCode = null
+      await user.save()
+      return res.status(500).json({
+        status: 'error',
+        message: 'There was an error sending email, please try again'
+      })
+    }
+  } catch (error) {}
+}
 
 const verifyEmailHandler = async (req, res, next) => {
   try {
@@ -14,13 +55,13 @@ const verifyEmailHandler = async (req, res, next) => {
     const user = await User.findOne({
       verificationCode: req.params.verificationCode
     })
-    console.log('🚀 ~ file: auth.controller.js:18 ~ user:', user)
 
     if (!user) {
       return res.status(400).send({ message: 'No se pudo verificar' })
     }
 
     user.verified = true
+    user.password = req.body.newPassword
     user.verificationCode = null
     await user.save()
 
@@ -147,5 +188,6 @@ export default {
   requireSignin,
   hasAuthorization,
   refreshToken,
-  verifyEmailHandler
+  verifyEmailHandler,
+  recoverPassword
 }

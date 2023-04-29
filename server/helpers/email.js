@@ -12,11 +12,12 @@ const { emailFrom } = config
 console.log('🚀 ~ file: email.js:12 ~ smtp:', config)
 
 export default class Email {
-  constructor (user, url) {
+  constructor (user, url, otp) {
     this.firstName = user.firstName
     this.to = user.email
     this.from = emailFrom
     this.url = url
+    this.otp = otp
   }
 
   newTransport () {
@@ -49,11 +50,11 @@ export default class Email {
 
   async send (template, subject) {
     // Generate HTML template based on the template string
-    console.log('🚀 ~ file: email.js:12 ~ smtp:', this.firstName)
     const html = pug.renderFile(`${__dirname}/../views/${template}.pug`, {
       firstName: this.firstName,
       subject,
-      url: this.url
+      url: this.url,
+      otp: this.otp
     })
     // Create mailOptions
     const mailOptions = {
@@ -73,8 +74,12 @@ export default class Email {
     // Send email
   }
 
-  async sendVerificationCode () {
-    await this.send('verificationCode', 'Your account verification code')
+  async sendVerificationCode (
+    template = 'verificationCode',
+    subject = 'Your account verification code'
+  ) {
+    console.log('xxxxxx', template, subject)
+    await this.send(template, subject)
   }
 
   async sendPasswordResetToken () {

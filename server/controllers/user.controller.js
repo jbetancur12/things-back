@@ -1,5 +1,6 @@
 import db from '../models/index.js'
 import Email from '../helpers/email.js'
+import 'dotenv/config'
 
 import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
@@ -12,10 +13,6 @@ const create = async (req, res) => {
   try {
     const user = new User(req.body)
     const { verificationCode } = user.createVerificationCode()
-    console.log(
-      '🚀 ~ file: user.controller.js:15 ~ create ~ verificationCode:',
-      verificationCode
-    )
     user.verificationCode = verificationCode
     await user.save()
 
@@ -28,7 +25,7 @@ const create = async (req, res) => {
 
     await assignRoleToUser(req.body.roles, user)
 
-    const redirectUrl = `http://localhost:5050/verifyemail/${verificationCode}`
+    const redirectUrl = `${process.env.FRONTEND_URL}/auth/new-password?code=${verificationCode}`
 
     try {
       await new Email(user, redirectUrl).sendVerificationCode()
