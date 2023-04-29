@@ -13,7 +13,16 @@ const config = {
       (process.env.IP || '192.168.0.6') +
       ':' +
       (process.env.MONGO_PORT || '27017') +
-      '/mqtt'
+      '/mqtt',
+  emailFrom: 'jabetancur12@gmail.com',
+  smtp: {
+    service: 'gmail',
+    secure: false,
+    host: process.env.EMAIL_HOST,
+    pass: process.env.EMAIL_PASS,
+    port: process.env.EMAIL_PORT,
+    user: process.env.EMAIL_USER
+  }
 }
 
 export default config
