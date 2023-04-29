@@ -2,6 +2,11 @@ import mqtt from 'mqtt'
 import Measurement from '../models/measurement.model.js'
 import 'dotenv/config'
 
+import db from '../models/index.js'
+
+const Measure = db.measure
+const Variable = db.variable
+
 class MqttHandler {
   constructor () {
     this.mqttClient = null
@@ -41,7 +46,30 @@ class MqttHandler {
       //   if (topic === 'json') console.log(message.toString())
       if (topic === 'jsonv2') {
         const plot = message.toString().split('/')
-        console.log(plot)
+
+        const variable = await Variable.findOne({ template: plot[1] })
+          .where('virtualPin')
+          .equals(plot[2])
+
+        const values = {
+          customer: plot[0],
+          template: plot[1],
+          virtualPin: plot[2],
+          value: plot[3],
+          variable: variable._id
+        }
+
+        try {
+          const measure = new Measure(values)
+          await measure.save()
+
+          // const customer = template.customer
+
+          variable.measures.push(measure._id)
+          await variable.save()
+        } catch (error) {
+          console.log(error)
+        }
       }
       if (topic === 'jsonv1') {
         const topicParsed = JSON.parse(message.toString())

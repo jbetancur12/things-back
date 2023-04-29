@@ -23,6 +23,7 @@ const VariableSchema = new Schema(
       ref: 'Customer',
       required: 'Customer is required'
     },
+
     template: {
       type: Schema.Types.ObjectId,
       ref: 'Template',
