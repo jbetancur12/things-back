@@ -1,8 +1,10 @@
 import errorHandler from '../helpers/dbErrorHandler.js'
-import mongoose from 'mongoose'
+import db from '../models/index.js'
 import extend from 'lodash/extend.js'
 
-const Variable = mongoose.model('Variable')
+const Template = db.template
+const Customer = db.customer
+const Variable = db.variable
 
 /**
  * Middleware to handle requests for a specific variable
@@ -53,21 +55,23 @@ const list = async (req, res) => {
  * Create a new variable
  */
 const create = async (req, res) => {
-  const variable = new Variable(req.body)
-  const virtualPinsUsed = await Variable.find({ customer: req.body.customer })
-  const result = virtualPinsUsed.filter(
-    (virtualPin) => virtualPin.virtualPin === req.body.virtualPin
-  )
-
   try {
-    if (result.length > 0) {
-      return res.status(400).json({
-        message: 'Virtual Pin already exists',
-        data: variable
-      })
-    }
-
+    const variable = new Variable(req.body)
     await variable.save()
+
+    const template = variable.template
+    await Template.findByIdAndUpdate(
+      template,
+      { $push: { variables: variable._id } },
+      { new: true, useFindAndModify: false }
+    )
+
+    const customer = variable.customer
+    await Customer.findByIdAndUpdate(
+      customer,
+      { $push: { variables: variable._id } },
+      { new: true, useFindAndModify: false }
+    )
 
     return res.status(200).json({
       message: 'Variable Successfully created!',
@@ -75,7 +79,7 @@ const create = async (req, res) => {
     })
   } catch (err) {
     return res.status(400).json({
-      error: errorHandler.getErrorMessage(err)
+      error: err
     })
   }
 }

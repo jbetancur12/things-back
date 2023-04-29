@@ -24,7 +24,8 @@ const VariableSchema = new Schema(
       required: 'Customer is required'
     },
     template: {
-      type: Number,
+      type: Schema.Types.ObjectId,
+      ref: 'Template',
       required: 'Template is required'
     },
     virtualPin: {
@@ -32,7 +33,13 @@ const VariableSchema = new Schema(
       required: 'Virtual Pin is required',
       min: 1,
       max: 100
-    }
+    },
+    measures: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Measure'
+      }
+    ]
   },
   { timestamps: true }
 )

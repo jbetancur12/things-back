@@ -1,15 +1,16 @@
 import errorHandler from '../helpers/dbErrorHandler.js'
-import mongoose from 'mongoose'
+import db from '../models/index.js'
 import extend from 'lodash/extend.js'
 
-const Template = mongoose.model('Template')
+const Template = db.template
+const Customer = db.customer
 
 /**
  * Middleware to handle requests for a specific template
  */
 const templateByID = async (req, res, next, id) => {
   try {
-    const template = await Template.findById(id)
+    const template = await Template.findById(id).populate('variables')
     if (!template) {
       return res.status(400).json({
         error: 'Template not found'
@@ -53,21 +54,16 @@ const list = async (req, res) => {
  * Create a new template
  */
 const create = async (req, res) => {
-  const template = new Template(req.body)
-  const virtualPinsUsed = await Template.find({ customer: req.body.customer })
-  const result = virtualPinsUsed.filter(
-    (virtualPin) => virtualPin.virtualPin === req.body.virtualPin
-  )
-
   try {
-    if (result.length > 0) {
-      return res.status(400).json({
-        message: 'Virtual Pin already exists',
-        data: template
-      })
-    }
-
+    const template = new Template(req.body)
     await template.save()
+
+    const customer = template.customer
+    await Customer.findByIdAndUpdate(
+      customer,
+      { $push: { templates: template._id } },
+      { new: true, useFindAndModify: false }
+    )
 
     return res.status(200).json({
       message: 'Template Successfully created!',
@@ -75,7 +71,7 @@ const create = async (req, res) => {
     })
   } catch (err) {
     return res.status(400).json({
-      error: errorHandler.getErrorMessage(err)
+      error: err
     })
   }
 }

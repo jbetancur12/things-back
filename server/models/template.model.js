@@ -7,7 +7,7 @@ const TemplateSchema = new Schema(
       type: String,
       required: 'Name is required'
     },
-    descriptiom: {
+    description: {
       type: String
     },
     customer: {

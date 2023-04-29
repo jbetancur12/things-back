@@ -63,6 +63,18 @@ const CustomerSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'User'
       }
+    ],
+    templates: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Template'
+      }
+    ],
+    variables: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Variable'
+      }
     ]
   },
   { timestamps: true }
