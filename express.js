@@ -10,6 +10,7 @@ import sensorRoutes from './server/routes/sensor.routes.js'
 import thingRoutes from './server/routes/thing.routes.js'
 import customerRoutes from './server/routes/customer.routes.js'
 import variableRoutes from './server/routes/variable.routes.js'
+import templateRoutes from './server/routes/template.routes.js'
 
 // import nodemailer from 'nodemailer';
 // (async function () {
@@ -41,6 +42,7 @@ app.use('/', sensorRoutes)
 app.use('/', thingRoutes)
 app.use('/', customerRoutes)
 app.use('/', variableRoutes)
+app.use('/', templateRoutes)
 
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
