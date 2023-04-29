@@ -1,4 +1,5 @@
 import db from '../models/index.js'
+import Email from '../helpers/email.js'
 
 import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
@@ -10,6 +11,12 @@ const Customer = db.customer
 const create = async (req, res) => {
   try {
     const user = new User(req.body)
+    const { verificationCode } = user.createVerificationCode()
+    console.log(
+      '🚀 ~ file: user.controller.js:15 ~ create ~ verificationCode:',
+      verificationCode
+    )
+    user.verificationCode = verificationCode
     await user.save()
 
     const customer = user.customer
@@ -20,6 +27,34 @@ const create = async (req, res) => {
     )
 
     await assignRoleToUser(req.body.roles, user)
+
+    const redirectUrl = `http://localhost:5050/verifyemail/${verificationCode}`
+
+    try {
+      await new Email(user, redirectUrl).sendVerificationCode()
+
+      // await send({
+      //     from: "sender@gmail.com",
+      //     to: "jorge.betancur@teads.tv",
+      //     subject: "test",
+      //     text: "Hola MUndo"
+      // })
+
+      // res.status(201).json({
+      //   status: 'success',
+      //   message:
+      //     'An email with a verification code has been sent to your email',
+      // });
+    } catch (error) {
+      console.log('🚀 ~ file: user.controller.js:39 ~ create ~ error:', error)
+      user.verificationCode = null
+      await user.save()
+
+      // return res.status(500).json({
+      //   status: 'error',
+      //   message: 'There was an error sending email, please try again',
+      // });
+    }
 
     res.status(200).json({ message: 'User was registered successfully!', user })
   } catch (err) {

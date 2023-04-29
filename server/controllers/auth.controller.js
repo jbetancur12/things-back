@@ -4,6 +4,35 @@ import { expressjwt } from 'express-jwt'
 import config from './../../config/config.js'
 import RefreshToken from '../models/refreshToken.model.js'
 
+const verifyEmailHandler = async (req, res, next) => {
+  try {
+    //   const verificationCode = crypto
+    //     .createHash('sha256')
+    //     .update(req.params.verificationCode)
+    //     .digest('hex');
+
+    const user = await User.findOne({
+      verificationCode: req.params.verificationCode
+    })
+    console.log('🚀 ~ file: auth.controller.js:18 ~ user:', user)
+
+    if (!user) {
+      return res.status(400).send({ message: 'No se pudo verificar' })
+    }
+
+    user.verified = true
+    user.verificationCode = null
+    await user.save()
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Email verified successfully'
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 const signin = async (req, res) => {
   User.findOne({
     email: req.body.email
@@ -16,7 +45,11 @@ const signin = async (req, res) => {
       }
 
       if (!user) {
-        return res.status(404).send({ message: 'User Not found.' })
+        return res.status(400).send({ message: 'User Not found.' })
+      }
+
+      if (!user.verified) {
+        return res.status(400).send({ message: 'You are not verified' })
       }
 
       if (!user.authenticate(req.body.password)) {
@@ -35,9 +68,7 @@ const signin = async (req, res) => {
       for (let i = 0; i < user.roles.length; i++) {
         authorities.push(user.roles[i].name.toUpperCase())
       }
-      res
-        .status(200)
-        .send({ user, accessToken: token, refreshToken })
+      res.status(200).send({ user, accessToken: token, refreshToken })
     })
 }
 
@@ -115,5 +146,6 @@ export default {
   signout,
   requireSignin,
   hasAuthorization,
-  refreshToken
+  refreshToken,
+  verifyEmailHandler
 }

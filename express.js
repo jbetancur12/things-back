@@ -1,6 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import { fileURLToPath } from 'url'
+import path from 'path'
 
 import userRoutes from './server/routes/user.routes.js'
 import authRoutes from './server/routes/auth.routes.js'
@@ -9,8 +11,20 @@ import thingRoutes from './server/routes/thing.routes.js'
 import customerRoutes from './server/routes/customer.routes.js'
 import variableRoutes from './server/routes/variable.routes.js'
 
+// import nodemailer from 'nodemailer';
+// (async function () {
+//   const credentials = await nodemailer.createTestAccount();
+//   console.log(credentials);
+// })();
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const app = express()
 /* ... configure express ... */
+
+app.set('view engine', 'pug')
+app.set('views', `${__dirname}/views`)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

@@ -37,6 +37,14 @@ const UserSchema = new Schema({
     //   default: false
     // }
   },
+  verified: {
+    type: Boolean,
+    default: false,
+    required: true
+  },
+  verificationCode: {
+    type: String
+  },
   lang: {
     type: String,
     enum: ['en', 'de', 'es']
@@ -88,6 +96,16 @@ UserSchema.methods = {
   },
   makeSalt: function () {
     return Math.round(new Date().valueOf() * Math.random()) + ''
+  },
+  createVerificationCode: function () {
+    const verificationCode = crypto.randomBytes(32).toString('hex')
+
+    const hashedVerificationCode = crypto
+      .createHash('sha256')
+      .update(verificationCode)
+      .digest('hex')
+
+    return { verificationCode, hashedVerificationCode }
   }
 }
 
