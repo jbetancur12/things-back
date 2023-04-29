@@ -15,6 +15,10 @@ const TemplateSchema = new Schema(
       ref: 'Customer',
       required: 'Customer is required'
     },
+    type: {
+      type: String,
+      enum: ['graph', 'display', 'output']
+    },
     variables: [
       {
         type: Schema.Types.ObjectId,

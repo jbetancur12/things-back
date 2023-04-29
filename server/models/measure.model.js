@@ -13,7 +13,12 @@ const MeasureSchema = new Schema(
     variable: {
       type: Schema.Types.ObjectId,
       ref: 'Variable',
-      required: 'Variable is required'
+      required: 'Customer is required'
+    },
+    customer: {
+      type: Schema.Types.ObjectId,
+      ref: 'Customer',
+      required: 'Customer is required'
     },
     template: {
       type: Schema.Types.ObjectId,
