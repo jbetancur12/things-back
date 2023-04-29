@@ -5,57 +5,102 @@ import errorHandler from '../helpers/dbErrorHandler.js'
 
 const User = db.user
 const Role = db.role
+const Customer = db.customer
 
-const create = (req, res) => {
-  const user = new User(req.body)
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).json({ message: err })
-      return
-    }
+const create = async (req, res) => {
+  try {
+    const user = new User(req.body)
+    await user.save()
 
-    if (req.body.roles) {
-      Role.find(
-        {
-          name: { $in: req.body.roles }
-        },
-        (err, roles) => {
-          if (err) {
-            res.status(500).json({ message: err })
-            return
-          }
+    const customer = user.customer
+    await Customer.findByIdAndUpdate(
+      customer,
+      { $push: { users: user._id } },
+      { new: true, useFindAndModify: false }
+    )
 
-          user.roles = roles.map((role) => role._id)
-          user.save((err) => {
-            if (err) {
-              res.status(500).json({ message: err })
-              return
-            }
+    await assignRoleToUser(req.body.roles, user)
 
-            res
-              .status(200)
-              .json({ message: 'User was registered successfully!' })
-          })
-        }
-      )
-    } else {
-      Role.findOne({ name: 'USER_ROLE' }, (err, role) => {
-        if (err) {
-          res.status(500).json({ message: err })
-          return
-        }
-        user.roles = [role._id]
-        user.save((err) => {
-          if (err) {
-            res.status(500).json({ message: err })
-            return
-          }
-          res.status(200).json({ message: 'User was registered successfully!' })
-        })
-      })
-    }
-  })
+    res.status(200).json({ message: 'User was registered successfully!', user })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
 }
+
+const assignRoleToUser = async (roles, user) => {
+  try {
+    if (roles) {
+      const foundRoles = await Role.find({ name: { $in: roles } })
+      user.roles = foundRoles.map((role) => role._id)
+    } else {
+      const defaultRole = await Role.findOne({ name: 'USER_ROLE' })
+      user.roles = [defaultRole._id]
+    }
+
+    await user.save()
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+// const create = (req, res) => {
+//   const user = new User(req.body)
+//   user.save(async (err, user) => {
+//     if (err) {
+//       res.status(500).json({ message: err })
+//       return
+//     }
+
+//     const customer = user.customer
+
+//      await Customer.findByIdAndUpdate(
+//         customer,
+//         { $push: { users: user._id } },
+//         { new: true, useFindAndModify: false },
+//       );
+
+//     if (req.body.roles) {
+//       Role.find(
+//         {
+//           name: { $in: req.body.roles }
+//         },
+//         (err, roles) => {
+//           if (err) {
+//             res.status(500).json({ message: err })
+//             return
+//           }
+
+//           user.roles = roles.map((role) => role._id)
+//           user.save((err) => {
+//             if (err) {
+//               res.status(500).json({ message: err })
+//               return
+//             }
+
+//             res
+//               .status(200)
+//               .json({ message: 'User was registered successfully!', user })
+//           })
+//         }
+//       )
+//     } else {
+//       Role.findOne({ name: 'USER_ROLE' }, (err, role) => {
+//         if (err) {
+//           res.status(500).json({ message: err })
+//           return
+//         }
+//         user.roles = [role._id]
+//         user.save((err) => {
+//           if (err) {
+//             res.status(500).json({ message: err })
+//             return
+//           }
+//           res.status(200).json({ message: 'User was registered successfully!', user })
+//         })
+//       })
+//     }
+//   })
+// }
 
 const list = async (req, res) => {
   try {

@@ -9,7 +9,7 @@ const Customer = mongoose.model('Customer')
  */
 const customerByID = async (req, res, next, id) => {
   try {
-    const customer = await Customer.findById(id)
+    const customer = await Customer.findById(id).populate('users')
     if (!customer) {
       return res.status(400).json({
         error: 'Customer not found'
@@ -64,10 +64,7 @@ const create = async (req, res) => {
   const customer = new Customer(req.body)
   try {
     await customer.save()
-    return res.status(200).json({
-      message: 'Customer Successfully created!',
-      data: customer
-    })
+    return res.status(200).json(customer)
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)

@@ -35,11 +35,11 @@ class MqttHandler {
 
     // When a message arrives, console.log it
     this.mqttClient.on('message', async function (topic, message) {
-      console.log('🚀 ~ file: mqtt_handler.js:38 ~ MqttHandler ~ topic:', topic)
       if (topic === 'test') {
         console.log(message)
       }
-      if (topic === 'json') {
+      if (topic === 'json') console.log(message.toString())
+      if (topic === 'jsonv1') {
         const topicParsed = JSON.parse(message.toString())
         // console.log(
         //   '🚀 ~ file: mqtt_handler.js:40 ~ MqttHandler ~ topicParsed:',
