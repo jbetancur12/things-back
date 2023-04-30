@@ -14,6 +14,7 @@ const create = async (req, res) => {
     const user = new User(req.body)
     const { verificationCode } = user.createVerificationCode()
     user.verificationCode = verificationCode
+    user.password = 'qwerty123'
     await user.save()
 
     const customer = user.customer
