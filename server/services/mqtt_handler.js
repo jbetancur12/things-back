@@ -44,7 +44,7 @@ class MqttHandler {
         console.log(message)
       }
       //   if (topic === 'json') console.log(message.toString())
-      if (topic === 'jsonv2') {
+      if (topic === 'json') {
         const plot = message.toString().split('/')
 
         const variable = await Variable.findOne({ template: plot[1] })

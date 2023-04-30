@@ -41,6 +41,7 @@ const find = async (req, res) => {
  */
 const list = async (req, res) => {
   try {
+    console.log(req.query)
     const templates = await Template.find({ ...req.query })
     res.json(templates)
   } catch (err) {

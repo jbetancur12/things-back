@@ -4,6 +4,130 @@ import extend from 'lodash/extend.js'
 
 const Measure = mongoose.model('Measure')
 
+const getByPeriod = async (req, res) => {
+  console.log('StarDate', new Date(req.query.startDate))
+  console.log('EndDate', new Date(req.query.endDate))
+  console.log('Template', req.query.template)
+  console.log('Unit', req.query.unit)
+  console.log('Period', req.query.period)
+  try {
+    const pipeline = [
+      {
+        $lookup: {
+          from: 'variables',
+          localField: 'variable',
+          foreignField: '_id',
+          as: 'variable'
+        }
+      },
+      {
+        $match: {
+          $and: [
+            {
+              createdAt: {
+                $gte: new Date(req.query.startDate),
+                $lte: new Date(req.query.endDate)
+              }
+            },
+            { template: mongoose.Types.ObjectId(req.query.template) }
+          ]
+        }
+      },
+
+      {
+        $unwind: '$variable'
+      },
+      {
+        $addFields: {
+          roundedTimestamp: {
+            $dateTrunc: {
+              date: '$createdAt',
+              unit: 'minute',
+              binSize: 15
+            }
+          },
+          numericValue: {
+            $convert: { input: '$value', to: 'double', onError: 0 }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            variableName: '$variable.name',
+            variableUnit: '$variable.unit',
+            roundedTimestamp: '$roundedTimestamp'
+          },
+          measures: {
+            $push: '$numericValue'
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          variableName: '$_id.variableName',
+          variableUnit: '$_id.variableUnit',
+          timestamp: '$_id.roundedTimestamp',
+          avgValue: { $avg: '$measures' }
+        }
+      }
+    ]
+
+    // const pipeline = [
+    //     {
+    //       $lookup: {
+    //         from: 'variables',
+    //         localField: 'variable',
+    //         foreignField: '_id',
+    //         as: 'variable'
+    //       }
+    //     },
+    //     {
+    //       $unwind: '$variable'
+    //     },
+    //     {
+    //         $addFields: {
+    //           roundedTimestamp: {
+    //             $dateTrunc: {
+    //               date: '$createdAt',
+    //               unit: 'minute',
+    //               binSize: 15
+    //             }
+    //           },
+    //           numericValue: { $convert: { input: '$value', to: 'double', onError: 0 } }    }
+    //       },
+    //       {
+    //         $group: {
+    //           _id: {
+    //             variableId: '$variable.name',
+    //             roundedTimestamp: '$roundedTimestamp'
+    //           },
+    //           measures: {
+    //             $push: '$numericValue'      }
+    //         }
+    //       },
+    //       {
+    //         $project: {
+    //           _id: 0,
+    //           variable: '$_id.variableId',
+    //           timestamp: '$_id.roundedTimestamp',
+    //           avgValue: { $avg: '$measures' }
+    //         }
+    //       }
+    //   ]
+
+    const m = await Measure.aggregate(pipeline)
+
+    res.json(m)
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
 /**
  * Middleware to handle requests for a specific measure
  */
@@ -112,4 +236,4 @@ const remove = async (req, res) => {
   }
 }
 
-export default { list, create, remove, update, measureByID, find }
+export default { list, create, remove, update, measureByID, find, getByPeriod }
