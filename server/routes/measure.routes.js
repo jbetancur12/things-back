@@ -13,6 +13,8 @@ router
 
 // router.route('/api/measure/user/:userId').get(measureController.findByUserId)
 
+router.route('/api/measures/data').get(measureController.getByPeriod)
+
 router
   .route('/api/measures/:measureId')
   .get(measureController.find)

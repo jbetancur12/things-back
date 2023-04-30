@@ -78,7 +78,7 @@ const signin = async (req, res) => {
   User.findOne({
     email: req.body.email
   })
-    .populate('roles', '-__v')
+    .populate('roles customer', '-__v')
     .exec(async (err, user) => {
       if (err) {
         res.status(500).send({ message: err })
