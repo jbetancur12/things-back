@@ -34,9 +34,9 @@ const getByPeriod = async (req, res) => {
         }
       },
 
-      {
-        $unwind: '$variable'
-      },
+      //   {
+      //     $unwind: '$variable'
+      //   },
       {
         $addFields: {
           roundedTimestamp: {
@@ -48,28 +48,56 @@ const getByPeriod = async (req, res) => {
           },
           numericValue: {
             $convert: { input: '$value', to: 'double', onError: 0 }
-          }
+          },
+          variableName: '$variable.name',
+          variableUnit: '$variable.unit'
         }
       },
       {
         $group: {
           _id: {
-            variableName: '$variable.name',
-            variableUnit: '$variable.unit',
+            variableName: '$variableName',
+            variableUnit: '$variableUnit',
             roundedTimestamp: '$roundedTimestamp'
           },
-          measures: {
-            $push: '$numericValue'
+          avgValue: {
+            $avg: '$numericValue'
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$_id.roundedTimestamp',
+          //   names:{
+          //     $push:{
+          //         k : "Name",
+          //         v : {"$arrayElemAt":["$_id.variableUnit",0]}
+          //     }
+          //   },
+          measurements: {
+            $push: {
+              k: { $arrayElemAt: ['$_id.variableName', 0] },
+              // variableUnit: "$_id.variableUnit",
+              v: '$avgValue'
+            }
           }
         }
       },
       {
         $project: {
           _id: 0,
-          variableName: '$_id.variableName',
-          variableUnit: '$_id.variableUnit',
-          timestamp: '$_id.roundedTimestamp',
-          avgValue: { $avg: '$measures' }
+          timestamp: '$_id',
+          //   names:{
+          //     $arrayToObject: "$names"
+          //   },
+          measurements: {
+            $arrayToObject: '$measurements'
+          }
+        }
+      },
+      {
+        $sort: {
+          timestamp: 1
         }
       }
     ]

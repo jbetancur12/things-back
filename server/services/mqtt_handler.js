@@ -51,6 +51,8 @@ class MqttHandler {
           .where('virtualPin')
           .equals(plot[2])
 
+        if (!variable) return
+
         const values = {
           customer: plot[0],
           template: plot[1],
