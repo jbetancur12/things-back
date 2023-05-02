@@ -78,7 +78,6 @@ export default class Email {
     template = 'verificationCode',
     subject = 'Your account verification code'
   ) {
-    console.log('xxxxxx', template, subject)
     await this.send(template, subject)
   }
 

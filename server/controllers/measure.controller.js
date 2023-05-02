@@ -74,6 +74,13 @@ const getByPeriod = async (req, res) => {
           //         v : {"$arrayElemAt":["$_id.variableUnit",0]}
           //     }
           //   },
+
+          units: {
+            $push: {
+              k: { $arrayElemAt: ['$_id.variableName', 0] },
+              v: { $arrayElemAt: ['$_id.variableUnit', 0] }
+            }
+          },
           measurements: {
             $push: {
               k: { $arrayElemAt: ['$_id.variableName', 0] },
@@ -87,9 +94,9 @@ const getByPeriod = async (req, res) => {
         $project: {
           _id: 0,
           timestamp: '$_id',
-          //   names:{
-          //     $arrayToObject: "$names"
-          //   },
+          units: {
+            $arrayToObject: '$units'
+          },
           measurements: {
             $arrayToObject: '$measurements'
           }
@@ -101,49 +108,6 @@ const getByPeriod = async (req, res) => {
         }
       }
     ]
-
-    // const pipeline = [
-    //     {
-    //       $lookup: {
-    //         from: 'variables',
-    //         localField: 'variable',
-    //         foreignField: '_id',
-    //         as: 'variable'
-    //       }
-    //     },
-    //     {
-    //       $unwind: '$variable'
-    //     },
-    //     {
-    //         $addFields: {
-    //           roundedTimestamp: {
-    //             $dateTrunc: {
-    //               date: '$createdAt',
-    //               unit: 'minute',
-    //               binSize: 15
-    //             }
-    //           },
-    //           numericValue: { $convert: { input: '$value', to: 'double', onError: 0 } }    }
-    //       },
-    //       {
-    //         $group: {
-    //           _id: {
-    //             variableId: '$variable.name',
-    //             roundedTimestamp: '$roundedTimestamp'
-    //           },
-    //           measures: {
-    //             $push: '$numericValue'      }
-    //         }
-    //       },
-    //       {
-    //         $project: {
-    //           _id: 0,
-    //           variable: '$_id.variableId',
-    //           timestamp: '$_id.roundedTimestamp',
-    //           avgValue: { $avg: '$measures' }
-    //         }
-    //       }
-    //   ]
 
     const m = await Measure.aggregate(pipeline)
 
