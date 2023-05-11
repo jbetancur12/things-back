@@ -5,11 +5,6 @@ import extend from 'lodash/extend.js'
 const Measure = mongoose.model('Measure')
 
 const getByPeriod = async (req, res) => {
-  console.log('StarDate', new Date(req.query.startDate))
-  console.log('EndDate', new Date(req.query.endDate))
-  console.log('Template', req.query.template)
-  console.log('Unit', req.query.unit)
-  console.log('Period', req.query.period)
   try {
     const pipeline = [
       {

@@ -18,6 +18,10 @@ const VariableSchema = new Schema(
       trim: true,
       required: 'Unit is required'
     },
+    typePin: {
+      type: String,
+      trim: true
+    },
     customer: {
       type: Schema.Types.ObjectId,
       ref: 'Customer',
