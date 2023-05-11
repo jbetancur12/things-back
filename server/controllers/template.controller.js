@@ -99,12 +99,14 @@ const update = async (req, res) => {
  */
 const remove = async (req, res) => {
   try {
-    const template = req.template
-    const deletedCustomer = await template.remove()
-    res.json(deletedCustomer)
+    const template = await Template.findById(req.template._id)
+    // await Variable.deleteMany({ _id: { $in: variableIds } });
+    const deletedTemplate = await template.deleteOne()
+    // const deletedCustomer = await template.remove()
+    res.json(deletedTemplate)
   } catch (err) {
     return res.status(400).json({
-      error: errorHandler.getErrorMessage(err)
+      error: err
     })
   }
 }

@@ -5,6 +5,7 @@ import extend from 'lodash/extend.js'
 const Template = db.template
 const Customer = db.customer
 const Variable = db.variable
+const Measure = db.measure
 
 /**
  * Middleware to handle requests for a specific variable
@@ -107,8 +108,26 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const variable = req.variable
-    const deletedCustomer = await variable.remove()
-    res.json(deletedCustomer)
+    const measuresIds = variable.measures
+    console.log(
+      '🚀 ~ file: variable.controller.js:112 ~ remove ~ measuresIds:',
+      variable
+    )
+    const deletedVariable = await variable.deleteOne()
+
+    Template.updateOne(
+      { _id: deletedVariable.template },
+      { $pull: { variables: variable._id } },
+      async function (err) {
+        if (err) {
+          res.json(deletedVariable)
+        } else {
+          // variable reference successfully removed from template
+          await Measure.deleteMany({ _id: { $in: measuresIds } })
+          res.json(deletedVariable)
+        }
+      }
+    )
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)

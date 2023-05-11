@@ -29,4 +29,16 @@ const TemplateSchema = new Schema(
   { timestamps: true }
 )
 
+TemplateSchema.pre('deleteOne', { document: true }, async function (next) {
+  try {
+    await mongoose.model('Variable').deleteMany({ template: this._id })
+    await mongoose
+      .model('Measure')
+      .deleteMany({ variable: { $in: this.variables } })
+    next()
+  } catch (error) {
+    next()
+  }
+})
+
 export default mongoose.model('Template', TemplateSchema)

@@ -44,27 +44,27 @@ class MqttHandler {
         console.log(message)
       }
       //   if (topic === 'json') console.log(message.toString())
-      if (topic === 'json') {
+      if (topic === 'sensor') {
         const plot = message.toString().split('/')
 
         const variable = await Variable.findOne({ template: plot[1] })
           .where('virtualPin')
-          .equals(plot[2])
+          .equals(plot[3])
 
         if (!variable) return
 
         const values = {
           customer: plot[0],
           template: plot[1],
-          virtualPin: plot[2],
-          value: plot[3],
+          timestamp: plot[2],
+          virtualPin: plot[3],
+          value: plot[4],
           variable: variable._id
         }
 
         try {
           const measure = new Measure(values)
           await measure.save()
-
           // const customer = template.customer
 
           variable.measures.push(measure._id)
