@@ -1,6 +1,6 @@
+import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
 import db from '../models/index.js'
-import extend from 'lodash/extend.js'
 
 const Template = db.template
 const Customer = db.customer
@@ -10,7 +10,10 @@ const Customer = db.customer
  */
 const templateByID = async (req, res, next, id) => {
   try {
-    const template = await Template.findById(id).populate('variables')
+    const template = await Template.findById(id).populate(
+      'variables',
+      '-measures -__v'
+    )
     if (!template) {
       return res.status(400).json({
         error: 'Template not found'
