@@ -87,7 +87,7 @@ class MqttHandler {
 
     this.timerId = setInterval(async () => {
       for (const key in this.averageData) {
-        if (Object.prototype.hasOwnPropertycall(this.averageData, key)) {
+        if (Object.prototype.hasOwnProperty.call(this.averageData, key)) {
           const [virtualPin, template] = key.split('-')
           const { sum, count, timestamp } = this.averageData[key]
           const averageValue = sum / count
