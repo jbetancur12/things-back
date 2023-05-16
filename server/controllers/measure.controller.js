@@ -1,11 +1,42 @@
-import errorHandler from '../helpers/dbErrorHandler.js'
-import mongoose from 'mongoose'
 import extend from 'lodash/extend.js'
+import mongoose from 'mongoose'
+import errorHandler from '../helpers/dbErrorHandler.js'
 
 const Measure = mongoose.model('Measure')
 
 const getByPeriod = async (req, res) => {
   try {
+    const startTime = performance.now()
+
+    const startDate = new Date(req.query.startDate)
+    const endDate = new Date(req.query.endDate)
+    const timeDiff = endDate - startDate // Diferencia de tiempo en milisegundos
+    console.log(
+      '🚀 ~ file: measure.controller.js:15 ~ getByPeriod ~ timeDiff:',
+      timeDiff
+    )
+
+    let unit, binSize
+    if (timeDiff <= 1 * 60 * 60 * 1000) {
+      unit = 'minute'
+      binSize = 10
+    } else if (timeDiff <= 6 * 60 * 60 * 1000) {
+      unit = 'minute'
+      binSize = 30
+    } else if (timeDiff <= 24 * 60 * 60 * 1000) {
+      // Menos de un día (24 horas) 24 h 60 min 60 seg 1000 ms
+      unit = 'minute'
+      binSize = 60
+    } else if (timeDiff <= 7 * 24 * 60 * 60 * 1000) {
+      // Menos de una semana (7 días)
+      unit = 'day'
+      binSize = 1
+    } else {
+      // Mayor a una semana
+      unit = 'day'
+      binSize = 7
+    }
+
     const pipeline = [
       {
         $lookup: {
@@ -37,8 +68,8 @@ const getByPeriod = async (req, res) => {
           roundedTimestamp: {
             $dateTrunc: {
               date: '$createdAt',
-              unit: 'minute',
-              binSize: 15
+              unit,
+              binSize
             }
           },
           numericValue: {
@@ -105,6 +136,11 @@ const getByPeriod = async (req, res) => {
     ]
 
     const m = await Measure.aggregate(pipeline)
+
+    const endTime = performance.now() // Registra el tiempo de finalización
+    const duration = endTime - startTime // Calcula la duración en milisegundos
+
+    console.log(`La consulta tomó ${duration} ms`) // Imprime la duración en la consola
 
     res.json(m)
   } catch (err) {

@@ -10,6 +10,9 @@ const MeasureSchema = new Schema(
     virtualPin: {
       type: String
     },
+    timestamp: {
+      type: Date
+    },
     variable: {
       type: Schema.Types.ObjectId,
       ref: 'Variable',

@@ -1,7 +1,4 @@
 import mqtt from 'mqtt'
-import Measurement from '../models/measurement.model.js'
-import 'dotenv/config'
-
 import db from '../models/index.js'
 
 const Measure = db.measure
@@ -10,9 +7,11 @@ const Variable = db.variable
 class MqttHandler {
   constructor () {
     this.mqttClient = null
-    this.host = process.env.MQTT_HOST || "mqtt://134.209.118.100:1883'"
+    this.host = process.env.MQTT_HOST || 'mqtt://134.209.118.100:1883'
     this.username = process.env.MQTT_USER || 'jorge' // mqtt credentials if these are needed to connect
     this.password = process.env.MQTT_PASSWORD || 'jorge'
+    this.averageData = {}
+    this.timerId = null
   }
 
   connect () {
@@ -39,11 +38,7 @@ class MqttHandler {
     // this.mqttClient.subscribe('topic_sensor_humidity', { qos: 0 });
 
     // When a message arrives, console.log it
-    this.mqttClient.on('message', async function (topic, message) {
-      if (topic === 'test') {
-        console.log(message)
-      }
-      //   if (topic === 'json') console.log(message.toString())
+    this.mqttClient.on('message', async (topic, message) => {
       if (topic === 'sensor') {
         const plot = message.toString().split('/')
 
@@ -53,61 +48,79 @@ class MqttHandler {
 
         if (!variable) return
 
-        const values = {
-          customer: plot[0],
-          template: plot[1],
-          timestamp: plot[2],
-          virtualPin: plot[3],
-          value: plot[4],
-          variable: variable._id
-        }
+        const value = parseFloat(plot[4])
 
-        try {
-          const measure = new Measure(values)
-          await measure.save()
-          // const customer = template.customer
+        // Generate a unique key for the combination of plot[3] and plot[1]
+        const key = `${plot[3]}-${plot[1]}`
 
-          variable.measures.push(measure._id)
-          await variable.save()
-        } catch (error) {
-          console.log(error)
+        // Check if an entry already exists for the combination
+        if (Object.prototype.hasOwnProperty.call(this.averageData, key)) {
+          // If the entry already exists, add the value to the accumulator and increase the corresponding count
+          this.averageData[key].sum += value
+          this.averageData[key].count++
+          this.averageData[key].timestamp =
+            plot[2] !== '0' ? new Date(parseInt(plot[2])) : new Date()
+        } else {
+          // If the entry does not exist, create a new entry in averageData with the accumulator and count initialized to the current values
+          this.averageData[key] = {
+            sum: value,
+            count: 1,
+            timestamp:
+              plot[2] !== '0' ? new Date(parseInt(plot[2])) : new Date()
+          }
         }
-      }
-      if (topic === 'jsonv1') {
-        const topicParsed = JSON.parse(message.toString())
-        // console.log(
-        //   '🚀 ~ file: mqtt_handler.js:40 ~ MqttHandler ~ topicParsed:',
-        //   topicParsed
-        // )
-
-        const values = {
-          temperature: topicParsed.temperature,
-          humidity: topicParsed.humidity,
-          mac: topicParsed.mac
-          // mac: topicParsed.id
-        }
-        const measure = new Measurement(values)
-        try {
-          await measure.save()
-        } catch (err) {
-          console.log('Error;', err)
-        }
-        // const values = [topicParsed.temperature, topicParsed.humidity]
-        // pool.connect((err, client, done) => {
-        //   const query = `INSERT INTO public.sensors(temperature, humidity) VALUES ($1,$2);`;
-        //   client.query(query, values, (error, result) => {
-        //     done();
-        //     if (error) {
-        //       console.log(error);
-        //     }
-        //   })
-        // })
       }
     })
 
     this.mqttClient.on('close', () => {
       console.log('mqtt client disconnected')
     })
+
+    this.startTimer()
+  }
+
+  startTimer () {
+    if (this.timerId) {
+      clearInterval(this.timerId)
+      this.timerId = null
+    }
+
+    this.timerId = setInterval(async () => {
+      for (const key in this.averageData) {
+        if (Object.prototype.hasOwnPropertycall(this.averageData, key)) {
+          const [virtualPin, template] = key.split('-')
+          const { sum, count, timestamp } = this.averageData[key]
+          const averageValue = sum / count
+
+          const variable = await Variable.findOne({ template })
+            .where('virtualPin')
+            .equals(virtualPin)
+
+          if (!variable) continue
+
+          // Create a new measurement document for the average
+
+          const averageMeasure = new Measure({
+            customer: variable.customer,
+            template,
+            timestamp,
+            virtualPin,
+            value: averageValue,
+            variable: variable._id
+          })
+
+          try {
+            await averageMeasure.save()
+          } catch (error) {
+            console.log(error)
+          }
+
+          // Reset the accumulator and count for the current combination
+          this.averageData[key].sum = 0
+          this.averageData[key].count = 0
+        }
+      }
+    }, 2 * 60 * 1000)
   }
 
   // Sends a mqtt message to topic: mytopic
@@ -120,11 +133,6 @@ class MqttHandler {
     console.log(topic)
     this.mqttClient.subscribe(topic, { qos: 0 })
   }
-
-  // subscribers(topics: string[]) {
-  //   this.mqttClient.subscribe(topics, { qos: 0 });
-  // //  topics.forEach(topic => this.subscribe(topic))
-  // }
 }
 
 export default MqttHandler
