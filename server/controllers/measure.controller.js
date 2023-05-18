@@ -8,6 +8,9 @@ const getByPeriod = async (req, res) => {
   try {
     const startDate = new Date(req.query.startDate)
     const endDate = new Date(req.query.endDate)
+    const variables = req.query.variables
+      .split(',')
+      .map((variable) => mongoose.Types.ObjectId(variable))
     const timeDiff = endDate - startDate // Diferencia de tiempo en milisegundos
 
     const unitConfigurations = [
@@ -34,7 +37,8 @@ const getByPeriod = async (req, res) => {
         $match: {
           $and: [
             { createdAt: { $gte: startDate, $lte: endDate } },
-            { template: mongoose.Types.ObjectId(req.query.template) }
+            { template: mongoose.Types.ObjectId(req.query.template) },
+            { 'variable._id': { $in: variables } }
           ]
         }
       },
