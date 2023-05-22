@@ -14,10 +14,12 @@ const getByPeriod = async (req, res) => {
     const timeDiff = endDate - startDate // Diferencia de tiempo en milisegundos
 
     const unitConfigurations = [
-      { timeLimit: 1 * 60 * 60 * 1000, unit: 'minute', binSize: 2 },
-      { timeLimit: 6 * 60 * 60 * 1000, unit: 'minute', binSize: 15 },
-      { timeLimit: 3 * 24 * 60 * 60 * 1000, unit: 'minute', binSize: 30 },
-      { timeLimit: 7 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 1 }
+      //   { timeLimit: 1 * 60 * 60 * 1000, unit: 'minute', binSize: 2 }, // Una hora
+      { timeLimit: 6 * 60 * 60 * 1000, unit: 'minute', binSize: 2 }, // 6 Horas
+      { timeLimit: 1 * 24 * 60 * 60 * 1000, unit: 'minute', binSize: 5 }, // 3 dias
+      //   { timeLimit: 3 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 1 },
+      { timeLimit: 1 * 7 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 1 },
+      { timeLimit: 4 * 7 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 2 }
     ]
 
     const { unit, binSize } = unitConfigurations.find(
