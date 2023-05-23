@@ -1,9 +1,10 @@
-import config from '../../config/config.js'
+import { convert } from 'html-to-text'
 import nodemailer from 'nodemailer'
+import nodemailerSendgrid from 'nodemailer-sendgrid'
+import path from 'path'
 import pug from 'pug'
 import { fileURLToPath } from 'url'
-import path from 'path'
-import { convert } from 'html-to-text'
+import config from '../../config/config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -36,16 +37,23 @@ export default class Email {
     //     }
     // });
 
-    return nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: 'jabetancur12@gmail.com',
-        pass: 'dtdskvpfpalxrzmx'
-      }
-    })
+    // return nodemailer.createTransport({
+    // //   service: 'gmail',
+    //   host: 'smtp.sendgrid.net',
+    //   port: 587,
+    // //   secure: false,
+    //   auth: {
+    //     user: 'apikey',
+    //     pass: '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'
+    //   }
+    // })
+
+    return nodemailer.createTransport(
+      nodemailerSendgrid({
+        apiKey:
+          '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'
+      })
+    )
   }
 
   async send (template, subject) {

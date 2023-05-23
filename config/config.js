@@ -14,7 +14,7 @@ const config = {
       ':' +
       (process.env.MONGO_PORT || '27017') +
       '/mqtt',
-  emailFrom: 'jabetancur12@gmail.com',
+  emailFrom: 'proyectos@smaf.com.co',
   smtp: {
     service: 'gmail',
     secure: false,
