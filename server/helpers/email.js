@@ -22,32 +22,6 @@ export default class Email {
   }
 
   newTransport () {
-    // if (process.env.NODE_ENV === 'production') {
-    //   console.log('Hello')
-    // }
-
-    // return nodemailer.createTransport({
-    //     service:smtp.service,
-    //     host: smtp.host,
-    //     port: smtp.port,
-    //     secure: smtp.secure,
-    //     auth: {
-    //         user: smtp.user,
-    //         pass: smtp.pass
-    //     }
-    // });
-
-    // return nodemailer.createTransport({
-    // //   service: 'gmail',
-    //   host: 'smtp.sendgrid.net',
-    //   port: 587,
-    // //   secure: false,
-    //   auth: {
-    //     user: 'apikey',
-    //     pass: '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'
-    //   }
-    // })
-
     return nodemailer.createTransport(
       nodemailerSendgrid({
         apiKey: sendridPass
