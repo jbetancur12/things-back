@@ -6,6 +6,7 @@ const config = {
   jwtSecret: process.env.JWT_SECRET || 'YOUR_secret_key',
   jwtExpiration: 3600, // 1 hour
   jwtRefreshExpiration: 86400, // 24 hours
+  sendridPass: process.env.SENGRID_API_KEY,
   mongoUri:
     process.env.MONGODB_URI ||
     process.env.MONGO_HOST ||

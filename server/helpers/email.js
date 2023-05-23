@@ -9,7 +9,7 @@ import config from '../../config/config.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const { emailFrom } = config
+const { emailFrom, sendridPass } = config
 console.log('🚀 ~ file: email.js:12 ~ smtp:', config)
 
 export default class Email {
@@ -50,8 +50,7 @@ export default class Email {
 
     return nodemailer.createTransport(
       nodemailerSendgrid({
-        apiKey:
-          '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'
+        apiKey: sendridPass
       })
     )
   }
