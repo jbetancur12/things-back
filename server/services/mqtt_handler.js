@@ -39,36 +39,40 @@ class MqttHandler {
 
     // When a message arrives, console.log it
     this.mqttClient.on('message', async (topic, message) => {
-      if (topic === 'sensor') {
-        const plot = message.toString().split('/')
+      try {
+        if (topic === 'sensor') {
+          const plot = message.toString().split('/')
 
-        const variable = await Variable.findOne({ template: plot[1] })
-          .where('virtualPin')
-          .equals(plot[3])
+          const variable = await Variable.findOne({ template: plot[1] })
+            .where('virtualPin')
+            .equals(plot[3])
 
-        if (!variable) return
+          if (!variable) return
 
-        const value = parseFloat(plot[4])
+          const value = parseFloat(plot[4])
 
-        // Generate a unique key for the combination of plot[3] and plot[1]
-        const key = `${plot[3]}-${plot[1]}`
+          // Generate a unique key for the combination of plot[3] and plot[1]
+          const key = `${plot[3]}-${plot[1]}`
 
-        // Check if an entry already exists for the combination
-        if (Object.prototype.hasOwnProperty.call(this.averageData, key)) {
-          // If the entry already exists, add the value to the accumulator and increase the corresponding count
-          this.averageData[key].sum += value
-          this.averageData[key].count++
-          this.averageData[key].timestamp =
-            plot[2] !== '0' ? new Date(parseInt(plot[2])) : new Date()
-        } else {
-          // If the entry does not exist, create a new entry in averageData with the accumulator and count initialized to the current values
-          this.averageData[key] = {
-            sum: value,
-            count: 1,
-            timestamp:
+          // Check if an entry already exists for the combination
+          if (Object.prototype.hasOwnProperty.call(this.averageData, key)) {
+            // If the entry already exists, add the value to the accumulator and increase the corresponding count
+            this.averageData[key].sum += value
+            this.averageData[key].count++
+            this.averageData[key].timestamp =
               plot[2] !== '0' ? new Date(parseInt(plot[2])) : new Date()
+          } else {
+            // If the entry does not exist, create a new entry in averageData with the accumulator and count initialized to the current values
+            this.averageData[key] = {
+              sum: value,
+              count: 1,
+              timestamp:
+                plot[2] !== '0' ? new Date(parseInt(plot[2])) : new Date()
+            }
           }
         }
+      } catch (error) {
+        console.error('Error occurred:', error)
       }
     })
 

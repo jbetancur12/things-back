@@ -1,7 +1,7 @@
 import express from 'express'
-import userCtrl from '../controllers/user.controller.js'
 import authCtrl from '../controllers/auth.controller.js'
-import { verifySignUp, authJwt } from '../middlewares/index.js'
+import userCtrl from '../controllers/user.controller.js'
+import { authJwt, verifySignUp } from '../middlewares/index.js'
 
 const router = express.Router()
 
@@ -20,7 +20,8 @@ router
   // .get(authCtrl.requireSignin, userCtrl.read)
   .get(userCtrl.read)
   .put(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.update)
-  .delete(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.remove)
+  //   .delete(authCtrl.requireSignin, authCtrl.hasAuthorization, userCtrl.remove)
+  .delete(authJwt.verifyToken, authJwt.isAdmin, userCtrl.remove)
 
 router.param('userId', userCtrl.userByID)
 

@@ -1,6 +1,6 @@
+import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
 import db from '../models/index.js'
-import extend from 'lodash/extend.js'
 
 const Template = db.template
 const Customer = db.customer
