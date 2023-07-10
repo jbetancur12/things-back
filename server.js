@@ -1,17 +1,25 @@
 import config from './config/config.js'
 import app from './express.js'
-import MqttHandler from './server/services/mqtt_handler.js'
 import db from './server/models/index.js'
+import MqttHandler from './server/services/mqtt_handler.js'
 
 const Role = db.role
 
 const mqttClient = new MqttHandler()
 mqttClient.connect()
 
-db.mongoose.connect(config.mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+db.mongoose
+  .connect(config.mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log('🚀 Successfully connect to MongoDB.')
+  })
+  .catch((err) => {
+    console.error('Connection error', err)
+    process.exit()
+  })
 
 // .then(() => {
 //   () => {
