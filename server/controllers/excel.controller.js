@@ -1,8 +1,8 @@
 import xlsx from 'xlsx'
 import db from '../models/index.js'
 
-// const Template = db.template
-// const Customer = db.customer
+const Template = db.template
+const Customer = db.customer
 const Variable = db.variable
 
 const upload = async (req, res) => {
@@ -22,12 +22,35 @@ const upload = async (req, res) => {
 
     // Guardar las variables en MongoDB
     const variables = rows.map((row) => {
-      const [name, sensorType, unit, typePin, customer, template, virtualPin] =
+      const [virtualPin, name, sensorType, unit, typePin, customer, template] =
         row
-      return { name, sensorType, unit, typePin, customer, template, virtualPin }
+      return { virtualPin, name, sensorType, unit, typePin, customer, template }
     })
 
-    await Variable.insertMany(variables)
+    console.log(
+      '🚀 ~ file: excel.controller.js:30 ~ variables ~ row:',
+      variables
+    )
+
+    const savedVariables = await Variable.insertMany(variables)
+
+    // Crear asociaciones con Template y Customer
+    for (const variable of savedVariables) {
+      if (variable.template) {
+        await Template.findByIdAndUpdate(
+          variable.template,
+          { $push: { variables: variable._id } },
+          { new: true, useFindAndModify: false }
+        )
+      }
+      if (variable.customer) {
+        await Customer.findByIdAndUpdate(
+          variable.customer,
+          { $push: { variables: variable._id } },
+          { new: true, useFindAndModify: false }
+        )
+      }
+    }
 
     res.status(200).json({ message: 'Archivo cargado exitosamente' })
   } catch (err) {
