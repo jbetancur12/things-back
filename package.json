@@ -35,9 +35,11 @@
     "mongoose": "^6.4.6",
     "mongoose-geojson-schema": "^2.2.2",
     "mqtt": "^4.3.7",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.1",
     "nodemailer-sendgrid": "^1.0.3",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "commitizen": "^4.2.5",

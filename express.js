@@ -1,17 +1,18 @@
-import express from 'express'
 import cors from 'cors'
+import express from 'express'
 import helmet from 'helmet'
-import { fileURLToPath } from 'url'
 import path from 'path'
+import { fileURLToPath } from 'url'
 
-import userRoutes from './server/routes/user.routes.js'
 import authRoutes from './server/routes/auth.routes.js'
-import sensorRoutes from './server/routes/sensor.routes.js'
-import thingRoutes from './server/routes/thing.routes.js'
 import customerRoutes from './server/routes/customer.routes.js'
-import variableRoutes from './server/routes/variable.routes.js'
-import templateRoutes from './server/routes/template.routes.js'
+import uploadRoutes from './server/routes/excel.routes.js'
 import measureRoutes from './server/routes/measure.routes.js'
+import sensorRoutes from './server/routes/sensor.routes.js'
+import templateRoutes from './server/routes/template.routes.js'
+import thingRoutes from './server/routes/thing.routes.js'
+import userRoutes from './server/routes/user.routes.js'
+import variableRoutes from './server/routes/variable.routes.js'
 
 // import nodemailer from 'nodemailer';
 // (async function () {
@@ -45,6 +46,7 @@ app.use('/', customerRoutes)
 app.use('/', variableRoutes)
 app.use('/', templateRoutes)
 app.use('/', measureRoutes)
+app.use('/', uploadRoutes)
 
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {

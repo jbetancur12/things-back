@@ -1,8 +1,8 @@
-import errorHandler from '../helpers/dbErrorHandler.js'
-import mongoose from 'mongoose'
 import extend from 'lodash/extend.js'
+import errorHandler from '../helpers/dbErrorHandler.js'
+import db from '../models/index.js'
 
-const Customer = mongoose.model('Customer')
+const Customer = db.customer
 
 /**
  * Middleware to handle requests for a specific customer
