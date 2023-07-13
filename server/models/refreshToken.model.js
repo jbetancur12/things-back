@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import config from '../../config/config.js'
 import { v4 as uuidv4 } from 'uuid'
+import config from '../../config/config.js'
 
 const RefreshTokenSchema = new mongoose.Schema({
   token: String,
@@ -24,15 +24,12 @@ RefreshTokenSchema.statics.createToken = async function (user) {
     expiryDate: expiredAt.getTime()
   })
 
-  console.log(_object)
-
   const refreshToken = await _object.save()
 
   return refreshToken.token
 }
 
 RefreshTokenSchema.statics.verifyExpiration = (token) => {
-  console.log(token.expiryDate.getTime() < new Date().getTime())
   return token.expiryDate.getTime() < new Date().getTime()
 }
 

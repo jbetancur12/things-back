@@ -1,6 +1,6 @@
-import db from '../models/index.js'
-import Email from '../helpers/email.js'
 import 'dotenv/config'
+import Email from '../helpers/email.js'
+import db from '../models/index.js'
 
 import extend from 'lodash/extend.js'
 import errorHandler from '../helpers/dbErrorHandler.js'
@@ -44,7 +44,6 @@ const create = async (req, res) => {
       //     'An email with a verification code has been sent to your email',
       // });
     } catch (error) {
-      console.log('🚀 ~ file: user.controller.js:39 ~ create ~ error:', error)
       user.verificationCode = null
       await user.save()
 

@@ -1,6 +1,5 @@
 import { convert } from 'html-to-text'
 import nodemailer from 'nodemailer'
-import nodemailerSendgrid from 'nodemailer-sendgrid'
 import path from 'path'
 import pug from 'pug'
 import { fileURLToPath } from 'url'
@@ -9,8 +8,7 @@ import config from '../../config/config.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const { emailFrom, sendridPass } = config
-console.log('🚀 ~ file: email.js:12 ~ smtp:', config)
+const { emailFrom, smtp } = config
 
 export default class Email {
   constructor (user, url, otp) {
@@ -22,11 +20,19 @@ export default class Email {
   }
 
   newTransport () {
-    return nodemailer.createTransport(
-      nodemailerSendgrid({
-        apiKey: sendridPass
-      })
-    )
+    // return nodemailer.createTransport(
+    //   nodemailerSendgrid({
+    //     apiKey: sendridPass
+    //   })
+    // )
+    return nodemailer.createTransport({
+      host: smtp.host,
+      port: smtp.port,
+      auth: {
+        user: smtp.user,
+        pass: smtp.pass
+      }
+    })
   }
 
   async send (template, subject) {
@@ -39,7 +45,7 @@ export default class Email {
     })
     // Create mailOptions
     const mailOptions = {
-      from: this.from,
+      from: `Plataforma Smaf <${this.from}>`,
       to: this.to,
       subject,
       text: convert(html),
@@ -48,7 +54,7 @@ export default class Email {
 
     try {
       const info = await this.newTransport().sendMail(mailOptions)
-      console.log(nodemailer.getTestMessageUrl(info))
+      console.log('NODEMAILER: ', nodemailer.getTestMessageUrl(info))
     } catch (error) {
       console.log('🚀 ~ file: email.js:56 ~ Email ~ send ~ error:', error)
     }
@@ -57,7 +63,7 @@ export default class Email {
 
   async sendVerificationCode (
     template = 'verificationCode',
-    subject = 'Your account verification code'
+    subject = 'Activar Cuenta'
   ) {
     await this.send(template, subject)
   }

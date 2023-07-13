@@ -1,9 +1,9 @@
-import User from '../models/user.model.js'
-import jwt from 'jsonwebtoken'
 import { expressjwt } from 'express-jwt'
-import config from './../../config/config.js'
-import RefreshToken from '../models/refreshToken.model.js'
+import jwt from 'jsonwebtoken'
 import Email from '../helpers/email.js'
+import RefreshToken from '../models/refreshToken.model.js'
+import User from '../models/user.model.js'
+import config from './../../config/config.js'
 
 const recoverPassword = async (req, res) => {
   try {
@@ -144,10 +144,6 @@ const refreshToken = async (req, res) => {
       {
         expiresIn: config.jwtExpiration
       }
-    )
-    console.log(
-      '🚀 ~ file: auth.controller.js:73 ~ refreshToken ~ newAccessToken:',
-      newAccessToken
     )
 
     return res.status(200).json({
