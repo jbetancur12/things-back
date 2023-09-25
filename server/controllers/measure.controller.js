@@ -16,15 +16,29 @@ const getByPeriod = async (req, res) => {
     const unitConfigurations = [
       //   { timeLimit: 1 * 60 * 60 * 1000, unit: 'minute', binSize: 2 }, // Una hora
       { timeLimit: 6 * 60 * 60 * 1000, unit: 'minute', binSize: 2 }, // 6 Horas
-      { timeLimit: 1 * 24 * 60 * 60 * 1000, unit: 'minute', binSize: 5 }, // 3 dias
+      { timeLimit: 1 * 24 * 60 * 60 * 1000, unit: 'minute', binSize: 5 }, // 1 dias
       //   { timeLimit: 3 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 1 },
-      { timeLimit: 1 * 7 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 1 },
-      { timeLimit: 4 * 7 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 2 }
+      { timeLimit: 1 * 7 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 1 }, // 7 dias
+      { timeLimit: 4 * 7 * 24 * 60 * 60 * 1000, unit: 'hour', binSize: 2 } // 1 mes
     ]
 
-    const { unit, binSize } = unitConfigurations.find(
-      (config) => timeDiff <= config.timeLimit
-    )
+    // const { unit, binSize } = unitConfigurations.find(
+    //   (config) => {
+    //     return timeDiff <= config.timeLimit}
+    // )
+
+    const result = unitConfigurations.find((config) => {
+      return timeDiff <= config.timeLimit
+    })
+
+    let unit = 'hour' // Valor predeterminado por defecto
+    let binSize = 2 // Valor predeterminado por defecto
+
+    if (result && result.timeLimit >= 4 * 7 * 24 * 60 * 60 * 1000) {
+      // Si se encuentra una configuración válida con límite de tiempo de un mes o más,
+      // entonces usa esa configuración
+      ;({ unit, binSize } = result) // Asignación destructiva
+    }
 
     const pipeline = [
       {
