@@ -11,6 +11,7 @@ const getByPeriod = async (req, res) => {
     const variables = req.query.variables
       .split(',')
       .map((variable) => mongoose.Types.ObjectId(variable))
+
     const timeDiff = endDate - startDate // Diferencia de tiempo en milisegundos
 
     const unitConfigurations = [
@@ -68,7 +69,7 @@ const getByPeriod = async (req, res) => {
             }
           },
           numericValue: {
-            $convert: { input: '$value', to: 'double', onError: 0 }
+            $round: [{ $toDouble: '$value' }, 2]
           },
           variableName: '$variable.name',
           variableUnit: '$variable.unit'
@@ -121,6 +122,8 @@ const getByPeriod = async (req, res) => {
         }
       }
     ]
+
+    // $convert: { input: '$value', to: 'double', onError: 0 }
 
     const m = await Measure.aggregate(pipeline)
 
