@@ -35,10 +35,11 @@ const getByPeriod = async (req, res) => {
     let unit = 'hour' // Valor predeterminado por defecto
     let binSize = 2 // Valor predeterminado por defecto
 
-    if (result && result.timeLimit >= 4 * 7 * 24 * 60 * 60 * 1000) {
+    if (result && result.timeLimit <= 4 * 7 * 24 * 60 * 60 * 1000) {
       // Si se encuentra una configuración válida con límite de tiempo de un mes o más,
       // entonces usa esa configuración
-      ;({ unit, binSize } = result) // Asignación destructiva
+      unit = result.unit // Asignación destructiva
+      binSize = result.binSize
     }
 
     const pipeline = [
@@ -68,11 +69,23 @@ const getByPeriod = async (req, res) => {
               binSize
             }
           },
+          // numericValue: {
+          //   $round: [{ $toDouble: '$value' }, 2]
+          // },
           numericValue: {
-            $round: [{ $toDouble: '$value' }, 2]
+            $cond: {
+              if: { $eq: ['$value', 'NaN'] }, // Agrega esta línea para manejar "NaN"
+              then: null, // O cualquier otro valor que desees asignar para "NaN"
+              else: { $round: [{ $toDouble: '$value' }, 2] }
+            }
           },
           variableName: '$variable.name',
           variableUnit: '$variable.unit'
+        }
+      },
+      {
+        $match: {
+          numericValue: { $ne: null } // Filtrar documentos donde "numericValue" no sea null (es decir, no sea "NaN")
         }
       },
       {
