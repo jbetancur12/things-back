@@ -85,12 +85,13 @@ class MqttHandler {
 
   startTimer () {
     if (this.timerId) {
-      console.log('timer')
       clearInterval(this.timerId)
       this.timerId = null
     }
 
+    console.log('timer')
     this.timerId = setInterval(async () => {
+      console.log('timer2')
       for (const key in this.averageData) {
         if (Object.prototype.hasOwnProperty.call(this.averageData, key)) {
           const [virtualPin, template] = key.split('-')
