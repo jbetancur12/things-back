@@ -84,8 +84,8 @@ class MqttHandler {
   }
 
   startTimer () {
-    console.log('timer')
     if (this.timerId) {
+      console.log('timer')
       clearInterval(this.timerId)
       this.timerId = null
     }
