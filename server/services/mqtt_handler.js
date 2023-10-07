@@ -50,10 +50,6 @@ class MqttHandler {
           if (!variable) return
 
           const value = parseFloat(plot[4])
-          console.log(
-            '🚀 ~ file: mqtt_handler.js:53 ~ MqttHandler ~ this.mqttClient.on ~ value:',
-            value
-          )
 
           // Generate a unique key for the combination of plot[3] and plot[1]
           const key = `${plot[3]}-${plot[1]}`
@@ -88,6 +84,7 @@ class MqttHandler {
   }
 
   startTimer () {
+    console.log('timer')
     if (this.timerId) {
       clearInterval(this.timerId)
       this.timerId = null
@@ -103,6 +100,10 @@ class MqttHandler {
           const variable = await Variable.findOne({ template })
             .where('virtualPin')
             .equals(virtualPin)
+          console.log(
+            '🚀 ~ file: mqtt_handler.js:103 ~ MqttHandler ~ this.timerId=setInterval ~ variable:',
+            variable
+          )
 
           if (!variable) continue
 
