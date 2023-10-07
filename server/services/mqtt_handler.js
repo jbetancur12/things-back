@@ -112,6 +112,10 @@ class MqttHandler {
             value: averageValue,
             variable: variable._id
           })
+          console.log(
+            '🚀 ~ file: mqtt_handler.js:115 ~ MqttHandler ~ this.timerId=setInterval ~ averageMeasure:',
+            averageMeasure
+          )
 
           try {
             await averageMeasure.save()
