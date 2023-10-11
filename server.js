@@ -1,3 +1,6 @@
+import http from 'http'
+
+import { WebSocket, WebSocketServer } from 'ws'
 import config from './config/config.js'
 import app from './express.js'
 import db from './server/models/index.js'
@@ -5,8 +8,28 @@ import MqttHandler from './server/services/mqtt_handler.js'
 
 const Role = db.role
 
+const server = http.createServer(app)
+const wss = new WebSocketServer({ server })
+
 const mqttClient = new MqttHandler()
 mqttClient.connect()
+
+const clients = new Set()
+
+wss.on('connection', (ws) => {
+  // Agregar el cliente WebSocket a la lista de clientes conectados
+  clients.add(ws)
+
+  // Eliminar el cliente WebSocket de la lista cuando se cierra la conexión
+  ws.on('close', () => {
+    clients.delete(ws)
+  })
+
+  // Manejar mensajes del cliente WebSocket si es necesario
+  ws.on('message', (message) => {
+    // Puedes manejar mensajes del cliente WebSocket aquí si es necesario
+  })
+})
 
 db.mongoose
   .connect(config.mongoUri, {
@@ -20,17 +43,6 @@ db.mongoose
     console.error('Connection error', err)
     process.exit()
   })
-
-// .then(() => {
-//   () => {
-//       console.log("🚀 Successfully connect to MongoDB.");
-//   },
-//   err => {
-//       console.error("Connection error", err);
-//       process.exit();
-//   }
-//   initial();
-// })
 
 db.mongoose.connection.on('connected', () => initial())
 
@@ -70,10 +82,26 @@ function initial () {
   })
 }
 
-app.listen(config.port, (err) => {
+mqttClient.onMessage((topic, message) => {
+  const messageStr = message.toString()
+
+  const payload = {
+    topic,
+    message: messageStr
+  }
+
+  clients.forEach((client) => {
+    // Verificar si el cliente WebSocket está abierto antes de enviar el mensaje
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload))
+    }
+  })
+})
+
+server.listen(config.port, (err) => {
   if (err) {
     console.log(err)
   }
   console.info('Server started on port %s.', config.port)
-  mqttClient.subscribe(['jsonv2', 'json', 'sensor'])
+  mqttClient.subscribe(['jsonv2', 'json', 'sensor', 'output'])
 })

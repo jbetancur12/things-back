@@ -89,9 +89,7 @@ class MqttHandler {
       this.timerId = null
     }
 
-    console.log('timer')
     this.timerId = setInterval(async () => {
-      console.log('timer2')
       for (const key in this.averageData) {
         if (Object.prototype.hasOwnProperty.call(this.averageData, key)) {
           const [virtualPin, template] = key.split('-')
@@ -101,10 +99,6 @@ class MqttHandler {
           const variable = await Variable.findOne({ template })
             .where('virtualPin')
             .equals(virtualPin)
-          console.log(
-            '🚀 ~ file: mqtt_handler.js:103 ~ MqttHandler ~ this.timerId=setInterval ~ variable:',
-            variable
-          )
 
           if (!variable) continue
 
@@ -118,10 +112,6 @@ class MqttHandler {
             value: averageValue,
             variable: variable._id
           })
-          console.log(
-            '🚀 ~ file: mqtt_handler.js:115 ~ MqttHandler ~ this.timerId=setInterval ~ averageMeasure:',
-            averageMeasure
-          )
 
           try {
             await averageMeasure.save()
@@ -135,6 +125,16 @@ class MqttHandler {
         }
       }
     }, 2 * 60 * 1000)
+  }
+
+  onMessage (callback) {
+    this.mqttClient.on('message', async (topic, message) => {
+      try {
+        callback(topic, message)
+      } catch (error) {
+        console.error('Error occurred:', error)
+      }
+    })
   }
 
   // Sends a mqtt message to topic: mytopic
