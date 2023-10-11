@@ -139,10 +139,6 @@ class MqttHandler {
 
   // Sends a mqtt message to topic: mytopic
   publish (topic, message) {
-    console.log(
-      '🚀 ~ file: mqtt_handler.js:142 ~ MqttHandler ~ publish ~ message:',
-      message
-    )
     this.mqttClient.publish(topic, message)
   }
 
