@@ -138,9 +138,12 @@ class MqttHandler {
   }
 
   // Sends a mqtt message to topic: mytopic
-  sendMessage (message) {
-    console.log(message)
-    this.mqttClient.publish('topic_on_off_led', message)
+  publish (topic, message) {
+    console.log(
+      '🚀 ~ file: mqtt_handler.js:142 ~ MqttHandler ~ publish ~ message:',
+      message
+    )
+    this.mqttClient.publish(topic, message)
   }
 
   subscribe (topic) {

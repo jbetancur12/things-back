@@ -18,6 +18,7 @@ const clients = new Set()
 
 wss.on('connection', (ws) => {
   // Agregar el cliente WebSocket a la lista de clientes conectados
+
   clients.add(ws)
 
   // Eliminar el cliente WebSocket de la lista cuando se cierra la conexión
@@ -27,7 +28,18 @@ wss.on('connection', (ws) => {
 
   // Manejar mensajes del cliente WebSocket si es necesario
   ws.on('message', (message) => {
-    // Puedes manejar mensajes del cliente WebSocket aquí si es necesario
+    try {
+      const data = JSON.parse(message)
+
+      // Procesar el mensaje según su tipo (publish o subscribe)
+      if (data.type === 'publish') {
+        mqttClient.publish(data.topic, data.message)
+      } else if (data.type === 'subscribe') {
+        mqttClient.subscribe(data.topic)
+      }
+    } catch (error) {
+      console.error('Error al procesar el mensaje:', error)
+    }
   })
 })
 
