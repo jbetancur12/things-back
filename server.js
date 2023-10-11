@@ -103,5 +103,5 @@ server.listen(config.port, (err) => {
     console.log(err)
   }
   console.info('Server started on port %s.', config.port)
-  mqttClient.subscribe(['jsonv2', 'json', 'sensor', 'output'])
+  mqttClient.subscribe(['sensor', 'output'])
 })
