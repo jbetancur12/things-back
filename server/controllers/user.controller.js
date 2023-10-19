@@ -10,8 +10,14 @@ const Role = db.role
 const Customer = db.customer
 
 const create = async (req, res) => {
+  // REVISAR BIEN
+  const newUser = { ...req.body }
+  if (req.body.roles) {
+    const foundRoles = await Role.find({ name: { $in: req.body.roles } })
+    newUser.roles = foundRoles.map((role) => role._id)
+  }
   try {
-    const user = new User(req.body)
+    const user = new User(newUser)
     const { verificationCode } = user.createVerificationCode()
     user.verificationCode = verificationCode
     user.password = 'qwerty123'
@@ -60,6 +66,14 @@ const create = async (req, res) => {
 }
 
 const assignRoleToUser = async (roles, user) => {
+  console.log(
+    '🚀 ~ file: user.controller.js:63 ~ assignRoleToUser ~ user:',
+    user
+  )
+  console.log(
+    '🚀 ~ file: user.controller.js:63 ~ assignRoleToUser ~ roles:',
+    roles
+  )
   try {
     if (roles) {
       const foundRoles = await Role.find({ name: { $in: roles } })
@@ -71,6 +85,10 @@ const assignRoleToUser = async (roles, user) => {
 
     await user.save()
   } catch (err) {
+    console.log(
+      '🚀 ~ file: user.controller.js:76 ~ assignRoleToUser ~ err:',
+      err
+    )
     throw new Error(err.message)
   }
 }
