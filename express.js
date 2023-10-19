@@ -10,6 +10,7 @@ import uploadRoutes from './server/routes/excel.routes.js'
 import measureRoutes from './server/routes/measure.routes.js'
 import roleRoutes from './server/routes/role.routes.js'
 import sensorRoutes from './server/routes/sensor.routes.js'
+import suscriptionRoutes from './server/routes/suscription.routes.js'
 import templateRoutes from './server/routes/template.routes.js'
 import thingRoutes from './server/routes/thing.routes.js'
 import userRoutes from './server/routes/user.routes.js'
@@ -49,6 +50,7 @@ app.use('/', templateRoutes)
 app.use('/', measureRoutes)
 app.use('/', uploadRoutes)
 app.use('/', roleRoutes)
+app.use('/', suscriptionRoutes)
 
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {

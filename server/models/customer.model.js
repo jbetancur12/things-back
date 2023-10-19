@@ -75,7 +75,35 @@ const CustomerSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'Variable'
       }
-    ]
+    ],
+    activeSubscription: {
+      isActive: {
+        type: Boolean,
+        default: false // Valor por defecto es false
+      },
+      startDate: {
+        type: Date
+        // required: 'Fecha de Inicio requerida'
+      },
+      endDate: {
+        type: Date
+        // required: 'Fecha de FIn requerida'
+      }
+    },
+    trialPeriod: {
+      isOnTrial: {
+        type: Boolean,
+        default: false // Valor por defecto es false
+      },
+      trialStartDate: {
+        type: Date
+        // required: 'Fecha de Inicio requerida'
+      },
+      trialEndDate: {
+        type: Date
+        // required: 'Fecha de Fin requerida'
+      }
+    }
   },
   { timestamps: true }
 )
