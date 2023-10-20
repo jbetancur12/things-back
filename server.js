@@ -21,7 +21,6 @@ wss.on('connection', (ws) => {
   // Agregar el cliente WebSocket a la lista de clientes conectados
 
   clients.add(ws)
-
   // Eliminar el cliente WebSocket de la lista cuando se cierra la conexión
   ws.on('close', () => {
     clients.delete(ws)
@@ -34,6 +33,7 @@ wss.on('connection', (ws) => {
 
       // Procesar el mensaje según su tipo (publish o subscribe)
       if (data.type === 'publish') {
+        console.log('==>', data)
         mqttClient.publish(data.topic, data.message)
       } else if (data.type === 'subscribe') {
         mqttClient.subscribe(data.topic)
