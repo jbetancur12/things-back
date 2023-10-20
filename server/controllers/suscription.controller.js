@@ -33,11 +33,39 @@ const activate = async (req, res) => {
 
     res.status(200).json(customer)
   } catch (error) {
-    console.log(
-      '🚀 ~ file: suscription.controller.js:34 ~ activate ~ error:',
-      error
-    )
     res.status(500).json({ error: 'Error al activar la suscripción' })
+  }
+}
+
+const editSubscription = async (req, res) => {
+  try {
+    const customerId = req.params.customerId
+    const customer = await Customer.findById(customerId)
+    for (const key in req.body) {
+      customer.activeSubscription[key] = req.body[key]
+    }
+
+    // customer.updated = Date.now
+    await customer.save()
+    res.status(200).json(customer)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al editar la suscripción' })
+  }
+}
+
+const editTrial = async (req, res) => {
+  try {
+    const customerId = req.params.customerId
+    const customer = await Customer.findById(customerId)
+    for (const key in req.body) {
+      customer.trialPeriod[key] = req.body[key]
+    }
+
+    // customer.updated = Date.now
+    await customer.save()
+    res.status(200).json(customer)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al editar la suscripción' })
   }
 }
 
@@ -121,4 +149,10 @@ const checkSuscriptions = async (req, res) => {
   }
 }
 
-export default { activate, trial, checkSuscriptions }
+export default {
+  activate,
+  trial,
+  checkSuscriptions,
+  editSubscription,
+  editTrial
+}
