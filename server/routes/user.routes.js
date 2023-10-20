@@ -7,7 +7,8 @@ const router = express.Router()
 
 router
   .route('/api/users')
-  .get(authJwt.verifyToken, authJwt.isAdmin, userCtrl.list)
+  // .get(authJwt.verifyToken, authJwt.isAdmin, userCtrl.list)
+  .get(userCtrl.list)
   .post(
     authJwt.test,
     verifySignUp.checkDuplicateUsernameOrEmail,

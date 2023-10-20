@@ -41,33 +41,40 @@ const test = (req, res, next) => {
 }
 
 const isAdmin = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err })
-      return
-    }
-
-    Role.find(
-      {
-        _id: { $in: user.roles }
-      },
-      (err, roles) => {
-        if (err) {
-          res.status(500).send({ message: err })
-          return
-        }
-
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === 'ADMIN_ROLE') {
-            next()
-            return
-          }
-        }
-
-        res.status(403).send({ message: 'Require Admin Role!' })
+  try {
+    User.findById(req.userId).exec((err, user) => {
+      if (err) {
+        res.status(500).send({ message: err })
+        return
       }
-    )
-  })
+
+      console.log('=>', user)
+      if (user.roles) {
+        Role.find(
+          {
+            _id: { $in: user.roles }
+          },
+          (err, roles) => {
+            if (err) {
+              res.status(500).send({ message: err })
+              return
+            }
+
+            for (let i = 0; i < roles.length; i++) {
+              if (roles[i].name === 'ADMIN_ROLE') {
+                next()
+                return
+              }
+            }
+
+            res.status(403).send({ message: 'Require Admin Role!' })
+          }
+        )
+      }
+    })
+  } catch (error) {
+    res.status(500).send({ message: error.message })
+  }
 }
 
 const isModerator = (req, res, next) => {
