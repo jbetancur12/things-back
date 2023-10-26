@@ -21,16 +21,28 @@ const upload = async (req, res) => {
     const [, ...rows] = data
 
     // Guardar las variables en MongoDB
-    const variables = rows.map((row) => {
-      const [virtualPin, name, sensorType, unit, typePin, customer, template] =
-        row
-      return { virtualPin, name, sensorType, unit, typePin, customer, template }
-    })
-
-    console.log(
-      '🚀 ~ file: excel.controller.js:30 ~ variables ~ row:',
-      variables
-    )
+    const variables = rows
+      .filter((row) => row.some((cell) => cell !== undefined && cell !== null))
+      .map((row) => {
+        const [
+          virtualPin,
+          name,
+          sensorType,
+          unit,
+          typePin,
+          customer,
+          template
+        ] = row
+        return {
+          virtualPin,
+          name,
+          sensorType,
+          unit,
+          typePin,
+          customer,
+          template
+        }
+      })
 
     const savedVariables = await Variable.insertMany(variables)
 
@@ -52,7 +64,9 @@ const upload = async (req, res) => {
       }
     }
 
-    res.status(200).json({ message: 'Archivo cargado exitosamente' })
+    res
+      .status(200)
+      .json({ message: 'Archivo cargado exitosamente', data: savedVariables })
   } catch (err) {
     res.status(500).json({ message: err.message })
   }

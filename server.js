@@ -33,7 +33,6 @@ wss.on('connection', (ws) => {
 
       // Procesar el mensaje según su tipo (publish o subscribe)
       if (data.type === 'publish') {
-        console.log('==>', data)
         mqttClient.publish(data.topic, data.message)
       } else if (data.type === 'subscribe') {
         mqttClient.subscribe(data.topic)
