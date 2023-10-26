@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+
+import Customer from './customer.model.js'
 const Schema = mongoose.Schema
 
 const VariableSchema = new Schema(
@@ -48,5 +50,20 @@ const VariableSchema = new Schema(
   },
   { timestamps: true }
 )
+
+VariableSchema.pre('remove', async function (next) {
+  const variable = this
+  // Encuentra todos los clientes que hacen referencia a esta variable y elimínala de su colección "variables"
+  const customers = await Customer.find({ variables: variable._id })
+  for (const customer of customers) {
+    const index = customer.variables.indexOf(variable._id)
+    if (index !== -1) {
+      customer.variables.splice(index, 1)
+      await customer.save()
+    }
+  }
+
+  next()
+})
 
 export default mongoose.model('Variable', VariableSchema)

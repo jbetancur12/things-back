@@ -1,5 +1,6 @@
-import mongoose from 'mongoose'
 import crypto from 'crypto'
+import mongoose from 'mongoose'
+import Customer from './customer.model.js'
 
 // const rolesValidos = {
 //   values: ['ADMIN_ROLE', 'USER_ROLE'],
@@ -126,5 +127,20 @@ UserSchema.path('hashed_password').validate(function (v) {
     this.invalidate('password', 'Password is required')
   }
 }, null)
+
+UserSchema.pre('remove', async function (next) {
+  const user = this
+  // Encuentra todos los clientes que hacen referencia a esta user y elimínala de su colección "users"
+  const customers = await Customer.find({ users: user._id })
+  for (const customer of customers) {
+    const index = customer.users.indexOf(user._id)
+    if (index !== -1) {
+      customer.users.splice(index, 1)
+      await customer.save()
+    }
+  }
+
+  next()
+})
 
 export default mongoose.model('User', UserSchema)

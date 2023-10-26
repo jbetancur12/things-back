@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import customerModel from './customer.model.js'
 const Schema = mongoose.Schema
 
 const TemplateSchema = new Schema(
@@ -39,6 +40,21 @@ TemplateSchema.pre('deleteOne', { document: true }, async function (next) {
   } catch (error) {
     next()
   }
+})
+
+TemplateSchema.pre('remove', async function (next) {
+  const template = this
+  // Encuentra todos los clientes que hacen referencia a esta template y elimínala de su colección "templates"
+  const customers = await customerModel.find({ templates: template._id })
+  for (const customer of customers) {
+    const index = customer.templates.indexOf(template._id)
+    if (index !== -1) {
+      customer.templates.splice(index, 1)
+      await customer.save()
+    }
+  }
+
+  next()
 })
 
 export default mongoose.model('Template', TemplateSchema)

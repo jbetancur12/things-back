@@ -103,9 +103,9 @@ const remove = async (req, res) => {
   try {
     const template = await Template.findById(req.template._id)
     // await Variable.deleteMany({ _id: { $in: variableIds } });
-    const deletedTemplate = await template.deleteOne()
+    await template.remove()
     // const deletedCustomer = await template.remove()
-    res.json(deletedTemplate)
+    res.json(template)
   } catch (err) {
     return res.status(400).json({
       error: err

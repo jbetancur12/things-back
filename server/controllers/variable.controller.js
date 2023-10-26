@@ -109,22 +109,20 @@ const remove = async (req, res) => {
   try {
     const variable = req.variable
     const measuresIds = variable.measures
-    console.log(
-      '🚀 ~ file: variable.controller.js:112 ~ remove ~ measuresIds:',
-      variable
-    )
-    const deletedVariable = await variable.deleteOne()
+
+    // Utiliza el método `remove()` para eliminar la variable
+    await variable.remove()
 
     Template.updateOne(
-      { _id: deletedVariable.template },
+      { _id: variable.template },
       { $pull: { variables: variable._id } },
       async function (err) {
         if (err) {
-          res.json(deletedVariable)
+          res.json(variable)
         } else {
           // variable reference successfully removed from template
           await Measure.deleteMany({ _id: { $in: measuresIds } })
-          res.json(deletedVariable)
+          res.json(variable)
         }
       }
     )
