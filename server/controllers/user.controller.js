@@ -155,7 +155,7 @@ const assignRoleToUser = async (roles, user) => {
 const list = async (req, res) => {
   try {
     if (!req.query.email) {
-      const users = await User.find({ ...req.query })
+      const users = await User.find({ ...req.query }).populate('customer')
       res.json(users)
     } else {
       const email = req.query.email
