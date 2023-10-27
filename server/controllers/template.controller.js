@@ -10,10 +10,14 @@ const Customer = db.customer
  */
 const templateByID = async (req, res, next, id) => {
   try {
-    const template = await Template.findById(id).populate(
-      'variables',
-      '-measures -__v'
-    )
+    const template = await Template.findById(id).populate({
+      path: 'variables',
+      select: '-measures -__v',
+      populate: {
+        path: 'controller',
+        select: '-measures -__v'
+      }
+    })
     if (!template) {
       return res.status(400).json({
         error: 'Template not found'

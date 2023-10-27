@@ -21,7 +21,13 @@ const ControllerSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Customer',
     required: 'Customer is required'
-  }
+  },
+  variables: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Variable'
+    }
+  ]
 })
 
 ControllerSchema.pre('remove', async function (next) {

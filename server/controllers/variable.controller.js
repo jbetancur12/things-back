@@ -6,6 +6,7 @@ const Template = db.template
 const Customer = db.customer
 const Variable = db.variable
 const Measure = db.measure
+const Controller = db.controller
 
 /**
  * Middleware to handle requests for a specific variable
@@ -43,7 +44,9 @@ const find = async (req, res) => {
  */
 const list = async (req, res) => {
   try {
-    const variables = await Variable.find({ ...req.query })
+    const variables = await Variable.find({ ...req.query }).populate(
+      'controller'
+    )
     res.json(variables)
   } catch (err) {
     return res.status(400).json({
@@ -73,6 +76,15 @@ const create = async (req, res) => {
       { $push: { variables: variable._id } },
       { new: true, useFindAndModify: false }
     )
+
+    const controller = variable.controller
+    await Controller.findByIdAndUpdate(
+      controller,
+      { $push: { variables: variable._id } },
+      { new: true, useFindAndModify: false }
+    )
+
+    await Variable.populate(variable, { path: 'controller' })
 
     return res.status(200).json({
       message: 'Variable Successfully created!',
