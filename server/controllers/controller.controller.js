@@ -1,3 +1,4 @@
+import dbErrorHandler from '../helpers/dbErrorHandler.js'
 import db from '../models/index.js'
 
 const Controller = db.controller
@@ -19,6 +20,20 @@ const controllerByID = async (req, res, next, id) => {
   } catch (err) {
     return res.status(400).json({
       error: 'Could not retrieve controller'
+    })
+  }
+}
+
+const list = async (req, res) => {
+  try {
+    const controllers = await Controller.find({ ...req.query }).populate(
+      'customer'
+    )
+
+    res.json(controllers)
+  } catch (err) {
+    return res.status(400).json({
+      error: dbErrorHandler.getErrorMessage(err)
     })
   }
 }
@@ -125,4 +140,10 @@ function generarCodigoAleatorio (longitud) {
   return codigo
 }
 
-export default { checkConnection, crearControlador, remove, controllerByID }
+export default {
+  checkConnection,
+  crearControlador,
+  remove,
+  controllerByID,
+  list
+}

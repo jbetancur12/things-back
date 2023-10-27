@@ -4,7 +4,6 @@ import helmet from 'helmet'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import Controller from './server/models/controller.model.js'
 import authRoutes from './server/routes/auth.routes.js'
 import { router as controllerRoutes } from './server/routes/controller.routes.js'
 import customerRoutes from './server/routes/customer.routes.js'
@@ -26,7 +25,7 @@ import variableRoutes from './server/routes/variable.routes.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const MAX_PING_INTERVAL = 60000
+// const MAX_PING_INTERVAL = 60000
 
 const app = express()
 /* ... configure express ... */
@@ -65,31 +64,31 @@ app.use((err, req, res, next) => {
   }
 })
 
-setInterval(async () => {
-  try {
-    // Consulta la base de datos para obtener la información más reciente de los controladores.
-    const controllers = await Controller.find()
+// setInterval(async () => {
+//   try {
+//     // Consulta la base de datos para obtener la información más reciente de los controladores.
+//     const controllers = await Controller.find()
 
-    controllers.forEach(async (controller) => {
-      const currentTime = Date.now()
+//     controllers.forEach(async (controller) => {
+//       const currentTime = Date.now()
 
-      if (
-        controller.lastPingTime &&
-        currentTime - controller.lastPingTime >= MAX_PING_INTERVAL &&
-        controller.connected
-      ) {
-        // El controlador ha superado el tiempo máximo sin ping, lo consideramos desconectado.
+//       if (
+//         controller.lastPingTime &&
+//         currentTime - controller.lastPingTime >= MAX_PING_INTERVAL &&
+//         controller.connected
+//       ) {
+//         // El controlador ha superado el tiempo máximo sin ping, lo consideramos desconectado.
 
-        // Actualiza la información en la base de datos para marcar el controlador como desconectado.
-        await Controller.findByIdAndUpdate(controller._id, { connected: false })
-        console.log(
-          `Controlador ${controller.controllerId} marcado como desconectado.`
-        )
-      }
-    })
-  } catch (error) {
-    console.error('Error al consultar la base de datos:', error)
-  }
-}, 30000)
+//         // Actualiza la información en la base de datos para marcar el controlador como desconectado.
+//         await Controller.findByIdAndUpdate(controller._id, { connected: false })
+//         console.log(
+//           `Controlador ${controller.controllerId} marcado como desconectado.`
+//         )
+//       }
+//     })
+//   } catch (error) {
+//     console.error('Error al consultar la base de datos:', error)
+//   }
+// }, 30000)
 
 export default app

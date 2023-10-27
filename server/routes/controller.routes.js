@@ -12,7 +12,11 @@ const lastPingTime = {}
 router
   .route('/api/check-controller-status/:controllerId')
   .post(connCtrl.checkConnection)
-router.route('/api/controller').post(connCtrl.crearControlador)
+
+router
+  .route('/api/controller')
+  .get(connCtrl.list)
+  .post(connCtrl.crearControlador)
 
 router.route('/api/controller/:controllerId').delete(connCtrl.remove)
 

@@ -1,10 +1,9 @@
 import mqtt from 'mqtt'
+import Controller from '../models/controller.model.js'
 import db from '../models/index.js'
 
 const Measure = db.measure
 const Variable = db.variable
-const Controller = db.controller
-
 class MqttHandler {
   constructor () {
     this.mqttClient = null
@@ -19,7 +18,13 @@ class MqttHandler {
     // Connect mqtt with credentials (in case of needed, otherwise we can omit 2nd param)
     this.mqttClient = mqtt.connect(this.host, {
       username: this.username,
-      password: this.password
+      password: this.password,
+      will: {
+        topic: 'disconnected', // Tema del mensaje LWT
+        payload: 'server', // Contenido del mensaje LWT
+        qos: 0, // Nivel de calidad de servicio
+        retain: true // Retención del mensaje LWT
+      }
     })
 
     // Mqtt error calback
@@ -41,14 +46,6 @@ class MqttHandler {
     // When a message arrives, console.log it
     this.mqttClient.on('message', async (topic, message) => {
       try {
-        if (topic === 'connected') {
-          const controller = message.toString()
-          const controllerFounded = await Controller.findOne({ controller })
-          if (controllerFounded) {
-            controllerFounded.connected = true
-            await controllerFounded.save()
-          }
-        }
         if (topic === 'disconnected') {
           const controller = message.toString()
           const controllerFounded = await Controller.findOne({
@@ -59,6 +56,16 @@ class MqttHandler {
             await controllerFounded.save()
           }
         }
+
+        if (topic === 'connected') {
+          const controller = message.toString()
+          const controllerFounded = await Controller.findOne({ controller })
+          if (controllerFounded) {
+            controllerFounded.connected = true
+            await controllerFounded.save()
+          }
+        }
+
         if (topic === 'sensor') {
           const plot = message.toString().split('/')
 
