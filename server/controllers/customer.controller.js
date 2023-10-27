@@ -9,7 +9,9 @@ const Customer = db.customer
  */
 const customerByID = async (req, res, next, id) => {
   try {
-    const customer = await Customer.findById(id).populate('users')
+    const customer = await Customer.findById(id)
+      .populate('users')
+      .populate('controllers')
     if (!customer) {
       return res.status(400).json({
         error: 'Customer not found'

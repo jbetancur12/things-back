@@ -64,6 +64,12 @@ const CustomerSchema = new Schema(
         ref: 'User'
       }
     ],
+    controllers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Controller'
+      }
+    ],
     templates: [
       {
         type: Schema.Types.ObjectId,

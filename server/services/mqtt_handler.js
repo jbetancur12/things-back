@@ -3,6 +3,7 @@ import db from '../models/index.js'
 
 const Measure = db.measure
 const Variable = db.variable
+const Controller = db.controller
 
 class MqttHandler {
   constructor () {
@@ -40,6 +41,24 @@ class MqttHandler {
     // When a message arrives, console.log it
     this.mqttClient.on('message', async (topic, message) => {
       try {
+        if (topic === 'connected') {
+          const controller = message.toString()
+          const controllerFounded = await Controller.findOne({ controller })
+          if (controllerFounded) {
+            controllerFounded.connected = true
+            await controllerFounded.save()
+          }
+        }
+        if (topic === 'disconnected') {
+          const controller = message.toString()
+          const controllerFounded = await Controller.findOne({
+            controllerId: controller
+          })
+          if (controllerFounded) {
+            controllerFounded.connected = false
+            await controllerFounded.save()
+          }
+        }
         if (topic === 'sensor') {
           const plot = message.toString().split('/')
 
