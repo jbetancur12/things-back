@@ -59,7 +59,9 @@ class MqttHandler {
 
         if (topic === 'connected') {
           const controller = message.toString()
-          const controllerFounded = await Controller.findOne({ controller })
+          const controllerFounded = await Controller.findOne({
+            controllerId: controller
+          })
           if (controllerFounded) {
             controllerFounded.connected = true
             await controllerFounded.save()
