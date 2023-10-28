@@ -80,6 +80,7 @@ const signin = async (req, res) => {
   })
     .populate('roles customer', '-__v')
     .exec(async (err, user) => {
+      console.log('🚀 ~ file: auth.controller.js:83 ~ .exec ~ user:', user)
       if (err) {
         res.status(500).send({ message: err })
         return
@@ -87,6 +88,16 @@ const signin = async (req, res) => {
 
       if (!user) {
         return res.status(400).send({ message: 'User Not found.' })
+      }
+
+      if (
+        user.roles[0].name !== 'ADMIN_ROLE' &&
+        (!user.customer?.activeSubscription.isActive ||
+          !user.customer?.trialPeriod.isOnTrial)
+      ) {
+        return res
+          .status(400)
+          .send({ message: 'La No cuenta tiene una suscripción activa' })
       }
 
       if (!user.verified) {
