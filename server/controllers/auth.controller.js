@@ -90,15 +90,15 @@ const signin = async (req, res) => {
         return res.status(400).send({ message: 'User Not found.' })
       }
 
-      if (
-        user.roles[0].name !== 'ADMIN_ROLE' &&
-        (!user.customer?.activeSubscription.isActive ||
-          !user.customer?.trialPeriod.isOnTrial)
-      ) {
-        return res
-          .status(400)
-          .send({ message: 'La No cuenta tiene una suscripción activa' })
-      }
+      // if (
+      //   user.roles[0].name !== 'ADMIN_ROLE' &&
+      //   (!user.customer?.activeSubscription.isActive ||
+      //     !user.customer?.trialPeriod.isOnTrial)
+      // ) {
+      //   return res
+      //     .status(400)
+      //     .send({ message: 'La No cuenta tiene una suscripción activa' })
+      // }
 
       if (!user.verified) {
         return res.status(400).send({ message: 'You are not verified' })

@@ -2,6 +2,7 @@ import dbErrorHandler from '../helpers/dbErrorHandler.js'
 import db from '../models/index.js'
 
 const Controller = db.controller
+const ControllerType = db.controllerType
 const Customer = db.customer
 
 /**
@@ -75,7 +76,11 @@ const crearControlador = async (req, res) => {
   try {
     // Genera un código alfanumérico único de 8 caracteres
     const nuevoCodigo = generarCodigoAleatorio(8)
-    const { customer, name } = req.body
+    const { customer, name, controllerType } = req.body
+    console.log(
+      '🚀 ~ file: controller.controller.js:80 ~ crearControlador ~ controllerType:',
+      controllerType
+    )
 
     // Crea una nueva instancia del modelo Controller
     const nuevoControlador = new Controller({
@@ -83,6 +88,7 @@ const crearControlador = async (req, res) => {
       lastPingTime: Date.now(), // Se establecerá automáticamente con la fecha actual
       connected: false, // Por defecto, se establece como conectado
       customer,
+      controllerType,
       name
     })
 
@@ -91,6 +97,12 @@ const crearControlador = async (req, res) => {
 
     await Customer.findByIdAndUpdate(
       customer,
+      { $push: { controllers: nuevoControlador._id } },
+      { new: true, useFindAndModify: false }
+    )
+
+    await ControllerType.findByIdAndUpdate(
+      controllerType,
       { $push: { controllers: nuevoControlador._id } },
       { new: true, useFindAndModify: false }
     )

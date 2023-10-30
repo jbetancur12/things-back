@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import controller from './controller.model.js'
+import controllerType from './controllerType.model.js'
 import customer from './customer.model.js'
 import measure from './measure.model.js'
 import measurement from './measurement.model.js'
@@ -25,6 +26,7 @@ db.variable = variable
 db.template = template
 db.measure = measure
 db.controller = controller
+db.controllerType = controllerType
 
 db.ROLES = ['USER_ROLE', 'ADMIN_ROLE', 'MODERATOR_ROLE']
 

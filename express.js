@@ -4,18 +4,7 @@ import helmet from 'helmet'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import authRoutes from './server/routes/auth.routes.js'
-import { router as controllerRoutes } from './server/routes/controller.routes.js'
-import customerRoutes from './server/routes/customer.routes.js'
-import uploadRoutes from './server/routes/excel.routes.js'
-import measureRoutes from './server/routes/measure.routes.js'
-import roleRoutes from './server/routes/role.routes.js'
-import sensorRoutes from './server/routes/sensor.routes.js'
-import suscriptionRoutes from './server/routes/suscription.routes.js'
-import templateRoutes from './server/routes/template.routes.js'
-import thingRoutes from './server/routes/thing.routes.js'
-import userRoutes from './server/routes/user.routes.js'
-import variableRoutes from './server/routes/variable.routes.js'
+import routes from './server/routes/index.js'
 
 // import nodemailer from 'nodemailer';
 // (async function () {
@@ -42,19 +31,6 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Smaf Cloud Api.' })
 })
 
-app.use('/', userRoutes)
-app.use('/', authRoutes)
-app.use('/', sensorRoutes)
-app.use('/', thingRoutes)
-app.use('/', customerRoutes)
-app.use('/', variableRoutes)
-app.use('/', templateRoutes)
-app.use('/', measureRoutes)
-app.use('/', uploadRoutes)
-app.use('/', roleRoutes)
-app.use('/', suscriptionRoutes)
-app.use('/', controllerRoutes)
-
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     res.status(401).json({ error: err.name + ': ' + err.message })
@@ -63,6 +39,8 @@ app.use((err, req, res, next) => {
     console.log(err)
   }
 })
+
+app.use(routes)
 
 // setInterval(async () => {
 //   try {
