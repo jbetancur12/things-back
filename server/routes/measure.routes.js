@@ -14,6 +14,9 @@ router
 // router.route('/api/measure/user/:userId').get(measureController.findByUserId)
 
 router.route('/api/measures/data').get(measureController.getByPeriod)
+router
+  .route('/api/measures/raw-data/:customerId')
+  .get(measureController.rawData)
 
 router
   .route('/api/measures/:measureId')

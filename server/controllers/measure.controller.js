@@ -1,6 +1,7 @@
 import extend from 'lodash/extend.js'
 import mongoose from 'mongoose'
 import errorHandler from '../helpers/dbErrorHandler.js'
+import ExcelJS from 'exceljs'
 
 const Measure = mongoose.model('Measure')
 
@@ -589,7 +590,61 @@ const getByPeriod = async (req, res) => {
 
 /**
  * Middleware to handle requests for a specific measure
+ *
+ *
  */
+
+const rawData = async (req, res) => {
+  const customerId = req.params.customerId
+  const startDate = req.query.startDate // Obtener fecha de inicio desde los parámetros de consulta
+  const endDate = req.query.endDate
+
+  try {
+    const query = { customer: customerId }
+
+    // Agregar filtro de rango de tiempo si se proporcionan fechas
+    if (startDate && endDate) {
+      query.timestamp = { $gte: new Date(startDate), $lte: new Date(endDate) }
+    }
+    const measures = await Measure.find(query)
+
+    if (measures.length === 0) {
+      return res.status(404).json({
+        error: 'No measures found for the specified customer ID'
+      })
+    }
+
+    // Crear un nuevo libro de Excel y hoja de cálculo
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('Medidas')
+
+    // Agregar encabezados
+    worksheet.addRow(['value', 'createdAt']) // Ajusta los nombres de campo según tu modelo Measure
+
+    // Agregar datos al archivo Excel
+    measures.forEach((measure) => {
+      measure.createdAt = measure.createdAt.toLocaleString()
+      worksheet.addRow([measure.value, measure.createdAt]) // Ajusta los campos según tu modelo Measure
+    })
+
+    // Configurar la respuesta para descargar el archivo Excel
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    res.setHeader('Content-Disposition', 'attachment; filename=medidas.xlsx')
+
+    // Escribir el libro de Excel en el flujo de respuesta
+    await workbook.xlsx.write(res)
+    res.end()
+  } catch (err) {
+    console.error('Error al recuperar medidas:', err)
+    res.status(500).json({
+      error: 'Error interno del servidor'
+    })
+  }
+}
+
 const measureByID = async (req, res, next, id) => {
   try {
     const measure = await Measure.findById(id)
@@ -695,4 +750,13 @@ const remove = async (req, res) => {
   }
 }
 
-export default { list, create, remove, update, measureByID, find, getByPeriod }
+export default {
+  list,
+  create,
+  remove,
+  update,
+  measureByID,
+  find,
+  getByPeriod,
+  rawData
+}
