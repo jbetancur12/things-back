@@ -594,6 +594,37 @@ const getByPeriod = async (req, res) => {
  *
  */
 
+const getFirstAndLastDate = async (req, res) => {
+  const customerId = req.params.customerId
+
+  try {
+    const firstData = await Measure.findOne({ customer: customerId }).sort({
+      createdAt: 1
+    })
+    const lastData = await Measure.findOne({ customer: customerId }).sort({
+      createdAt: -1
+    })
+
+    if (!firstData || !lastData) {
+      return res.status(404).json({
+        error: 'No data found for the specified customer ID'
+      })
+    }
+
+    const result = {
+      firstDate: firstData.createdAt,
+      lastDate: lastData.createdAt
+    }
+
+    res.json(result)
+  } catch (err) {
+    console.error('Error al obtener fechas:', err)
+    res.status(500).json({
+      error: 'Error interno del servidor'
+    })
+  }
+}
+
 const rawData = async (req, res) => {
   const customerId = req.params.customerId
   const startDate = req.query.startDate // Obtener fecha de inicio desde los parámetros de consulta
@@ -758,5 +789,6 @@ export default {
   measureByID,
   find,
   getByPeriod,
-  rawData
+  rawData,
+  getFirstAndLastDate
 }

@@ -19,6 +19,10 @@ router
   .get(measureController.rawData)
 
 router
+  .route('/api/measures/initial/:customerId')
+  .get(measureController.getFirstAndLastDate)
+
+router
   .route('/api/measures/:measureId')
   .get(measureController.find)
   .put(measureController.update)
