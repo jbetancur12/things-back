@@ -115,5 +115,11 @@ server.listen(config.port, (err) => {
     console.log(err)
   }
   console.info('Server started on port %s.', config.port)
-  mqttClient.subscribe(['sensor', 'output', 'connected', 'disconnected'])
+  mqttClient.subscribe([
+    'sensor',
+    'output',
+    'connected',
+    'disconnected',
+    'input'
+  ])
 })
