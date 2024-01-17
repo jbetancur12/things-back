@@ -4,6 +4,7 @@ import errorHandler from '../helpers/dbErrorHandler.js'
 import ExcelJS from 'exceljs'
 
 const Measure = mongoose.model('Measure')
+const Variable = mongoose.model('Variable')
 
 const getByPeriod = async (req, res) => {
   try {
@@ -625,6 +626,24 @@ const getFirstAndLastDate = async (req, res) => {
   }
 }
 
+// Función para obtener nombres de variables desde la colección de variables
+const getVariableNames = async (variableIds) => {
+  const variableNames = {}
+
+  try {
+    const variables = await Variable.find({ _id: { $in: variableIds } })
+
+    variables.forEach((variable) => {
+      variableNames[variable._id.toString()] = variable.name
+    })
+
+    return variableNames
+  } catch (error) {
+    console.error('Error al obtener nombres de variables:', error)
+    return {}
+  }
+}
+
 const rawData = async (req, res) => {
   const customerId = req.params.customerId
   const startDate = req.query.startDate // Obtener fecha de inicio desde los parámetros de consulta
@@ -645,17 +664,23 @@ const rawData = async (req, res) => {
       })
     }
 
+    const variableNames = await getVariableNames(
+      measures.map((measure) => measure.variable)
+    )
+
     // Crear un nuevo libro de Excel y hoja de cálculo
     const workbook = new ExcelJS.Workbook()
     const worksheet = workbook.addWorksheet('Medidas')
 
     // Agregar encabezados
-    worksheet.addRow(['value', 'createdAt']) // Ajusta los nombres de campo según tu modelo Measure
+    worksheet.addRow(['variable', 'value', 'createdAt']) // Ajusta los nombres de campo según tu modelo Measure
 
     // Agregar datos al archivo Excel
     measures.forEach((measure) => {
+      const variableName =
+        variableNames[measure.variable] || 'Nombre no encontrado'
       measure.createdAt = measure.createdAt.toLocaleString()
-      worksheet.addRow([measure.value, measure.createdAt]) // Ajusta los campos según tu modelo Measure
+      worksheet.addRow([variableName, measure.value, measure.createdAt]) // Ajusta los campos según tu modelo Measure
     })
 
     // Configurar la respuesta para descargar el archivo Excel
