@@ -40,7 +40,7 @@ const VariableSchema = new Schema(
       type: Number,
       required: 'Virtual Pin is required',
       min: 1,
-      max: 100
+      max: 999
     },
     measures: [
       {
