@@ -75,7 +75,7 @@ const checkConnection = async (req, res) => {
 const crearControlador = async (req, res) => {
   try {
     // Genera un código alfanumérico único de 8 caracteres
-    const nuevoCodigo = generarCodigoAleatorio(8)
+    const nuevoCodigo = generarCodigoAleatorio(3)
     const { customer, name, controllerType } = req.body
     console.log(
       '🚀 ~ file: controller.controller.js:80 ~ crearControlador ~ controllerType:',
