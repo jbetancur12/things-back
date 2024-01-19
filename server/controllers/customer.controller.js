@@ -4,6 +4,27 @@ import db from '../models/index.js'
 
 const Customer = db.customer
 
+function generarCodigoAleatorio (longitud) {
+  const caracteres =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let codigo = ''
+
+  for (let i = 0; i < longitud; i++) {
+    const caracterAleatorio = caracteres.charAt(
+      Math.floor(Math.random() * caracteres.length)
+    )
+
+    // Asegurarse de que el carácter no se repita
+    if (!codigo.includes(caracterAleatorio)) {
+      codigo += caracterAleatorio
+    } else {
+      i-- // Repetir la iteración para obtener un carácter único
+    }
+  }
+
+  return codigo
+}
+
 /**
  * Middleware to handle requests for a specific customer
  */
@@ -64,6 +85,7 @@ const list = async (req, res) => {
  */
 const create = async (req, res) => {
   const customer = new Customer(req.body)
+  customer.customerKey = generarCodigoAleatorio(3)
   try {
     await customer.save()
     return res.status(200).json(customer)

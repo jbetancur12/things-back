@@ -20,6 +20,10 @@ const TemplateSchema = new Schema(
       type: String,
       enum: ['graph', 'display', 'output']
     },
+    templateKey: {
+      type: String,
+      trim: true
+    },
     variables: [
       {
         type: Schema.Types.ObjectId,

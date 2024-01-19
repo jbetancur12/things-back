@@ -7,22 +7,55 @@ const Customer = db.customer
 
 /**
  * Middleware to handle requests for a specific template
+ *
+ *
  */
+
+function generarCodigoAleatorio (longitud) {
+  const caracteres =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let codigo = ''
+
+  for (let i = 0; i < longitud; i++) {
+    const caracterAleatorio = caracteres.charAt(
+      Math.floor(Math.random() * caracteres.length)
+    )
+
+    // Asegurarse de que el carácter no se repita
+    if (!codigo.includes(caracterAleatorio)) {
+      codigo += caracterAleatorio
+    } else {
+      i-- // Repetir la iteración para obtener un carácter único
+    }
+  }
+
+  return codigo
+}
+
 const templateByID = async (req, res, next, id) => {
   try {
-    const template = await Template.findById(id).populate({
-      path: 'variables',
-      select: '-measures -__v',
-      populate: {
-        path: 'controller',
-        select: '-measures -__v'
-      }
-    })
+    const template = await Template.findById(id)
+      .populate({
+        path: 'variables',
+        select: '-measures -__v',
+        populate: [
+          {
+            path: 'controller',
+            select: '-measures -__v'
+          }
+        ]
+      })
+      .populate({
+        path: 'customer',
+        select: 'customerKey'
+      })
+
     if (!template) {
       return res.status(400).json({
         error: 'Template not found'
       })
     }
+
     req.template = template
     next()
   } catch (err) {
@@ -63,6 +96,7 @@ const list = async (req, res) => {
 const create = async (req, res) => {
   try {
     const template = new Template(req.body)
+    template.templateKey = generarCodigoAleatorio(3)
     await template.save()
 
     const customer = template.customer

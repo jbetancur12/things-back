@@ -13,6 +13,10 @@ const CustomerSchema = new Schema(
         enum: ['natural', 'company']
       }
     },
+    customerKey: {
+      type: String,
+      trim: true
+    },
     IdCustomer: {
       type: String
     },
