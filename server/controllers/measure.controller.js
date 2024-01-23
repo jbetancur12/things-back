@@ -627,7 +627,7 @@ const getFirstAndLastDate = async (req, res) => {
 }
 
 // Función para obtener nombres de variables desde la colección de variables
-const getVariableNames = async (variableIds) => {
+export const getVariableNames = async (variableIds) => {
   const variableNames = {}
 
   try {

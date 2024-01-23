@@ -61,6 +61,31 @@ export default class Email {
     // Send email
   }
 
+  async sendExcel (template, subject, attachments = []) {
+    // Generate HTML template based on the template string
+    const html = pug.renderFile(`${__dirname}/../views/${template}.pug`, {
+      firstName: this.firstName,
+      subject
+    })
+    // Create mailOptions
+    const mailOptions = {
+      from: `Plataforma Smaf <${this.from}>`,
+      to: 'jorge.betancur@teads.com',
+      subject,
+      text: convert(html),
+      html,
+      attachments
+    }
+
+    try {
+      const info = await this.newTransport().sendMail(mailOptions)
+      console.log('NODEMAILER: ', nodemailer.getTestMessageUrl(info))
+    } catch (error) {
+      console.log('🚀 ~ file: email.js:56 ~ Email ~ send ~ error:', error)
+    }
+    // Send email
+  }
+
   async sendVerificationCode (
     template = 'verificationCode',
     subject = 'Activar Cuenta'
@@ -73,5 +98,17 @@ export default class Email {
       'resetPassword',
       'Your password reset token (valid for only 10 minutes)'
     )
+  }
+
+  async sendExcelAttachment (fileName, content) {
+    // Adjunta el archivo Excel directamente al correo
+    const attachments = [
+      {
+        filename: fileName,
+        content,
+        encoding: 'base64'
+      }
+    ]
+    await this.sendExcel('excelAttachment', 'Asunto del Correo', attachments)
   }
 }

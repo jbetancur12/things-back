@@ -16,7 +16,7 @@ class MqttHandler {
     this.password = process.env.MQTT_PASSWORD || 'jorge'
     this.averageData = {}
     this.timerId = null
-    this.timerInterval = 0.5 * 60 * 1000 // 0.5 minutes (adjustable)
+    this.timerInterval = 2 * 60 * 1000 // 0.5 minutes (adjustable)
   }
 
   async connect () {
@@ -85,6 +85,7 @@ class MqttHandler {
 
   async processSensorData (dataString) {
     const plot = dataString.split('/')
+
     const templateId = validarObjectId(plot[1])
       ? plot[1]
       : await this.getTemplateId(plot[1])
