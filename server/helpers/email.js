@@ -109,6 +109,6 @@ export default class Email {
         encoding: 'base64'
       }
     ]
-    await this.sendExcel('excelAttachment', 'Asunto del Correo', attachments)
+    await this.sendExcel('excelAttachment', 'Reporte Semanal', attachments)
   }
 }

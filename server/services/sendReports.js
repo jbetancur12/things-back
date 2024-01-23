@@ -8,6 +8,13 @@ import Email from '../helpers/email.js'
 const Customer = db.customer
 const Measure = db.measure
 
+const currentDate = new Date()
+
+// Obten el número de la semana utilizando Intl.DateTimeFormat
+const weekNumber = new Intl.DateTimeFormat('en-US', { week: 'numeric' }).format(
+  currentDate
+)
+
 async function enviarCorreos () {
   try {
     const currentDate = new Date()
@@ -20,7 +27,7 @@ async function enviarCorreos () {
     const customers = await Customer.find()
     const query = {
       timestamp: {
-        $gte: last30inutes,
+        $gte: lastWeek,
         $lte: currentDate
       }
     }
@@ -57,7 +64,10 @@ async function enviarCorreos () {
 
       const emailInstance = new Email(user)
 
-      await emailInstance.sendExcelAttachment('archivo_adjunto.xlsx', buffer)
+      await emailInstance.sendExcelAttachment(
+        'reporte_semanal_' + weekNumber + '.xlsx',
+        buffer
+      )
     })
 
     console.log('Correos electrónicos enviados con éxito.')
@@ -67,6 +77,7 @@ async function enviarCorreos () {
 }
 
 cron.schedule('0,30 * * * *', async () => {
+  // cron.schedule('*/30 * * * * *', async () => {
+  // cron.schedule('0 0 * * 1', async () => {
   await enviarCorreos()
-  console.log('Tarea semanal de enviar correos ejecutada con éxito.')
 })
