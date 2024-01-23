@@ -5,7 +5,7 @@ import config from './config/config.js'
 import app from './express.js'
 import db from './server/models/index.js'
 import './server/services/cron.js'
-import './server/services/sendReports.js'
+// import './server/services/sendReports.js'
 import MqttHandler from './server/services/mqtt_handler.js'
 
 const Role = db.role
