@@ -86,6 +86,12 @@ const CustomerSchema = new Schema(
         ref: 'Variable'
       }
     ],
+    logsActuactors: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'LogsActuactor'
+      }
+    ],
     activeSubscription: {
       isActive: {
         type: Boolean,

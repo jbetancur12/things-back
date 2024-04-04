@@ -13,6 +13,7 @@ import templateRoutes from './template.routes.js'
 import thingRoutes from './thing.routes.js'
 import userRoutes from './user.routes.js'
 import variableRoutes from './variable.routes.js'
+import logsActuatorRoutes from './logsActuactor.routes.js'
 const router = express.Router()
 
 const routersList = [
@@ -68,6 +69,10 @@ const routersList = [
   {
     path: '/',
     route: controllerTypeRoutes
+  },
+  {
+    path: '/',
+    route: logsActuatorRoutes
   }
 ]
 

@@ -10,6 +10,7 @@ import template from './template.model.js'
 import thing from './thing.model.js'
 import user from './user.model.js'
 import variable from './variable.model.js'
+import logsActuactor from './logsActuactor.model.js'
 mongoose.Promise = global.Promise
 
 const db = {}
@@ -27,6 +28,7 @@ db.template = template
 db.measure = measure
 db.controller = controller
 db.controllerType = controllerType
+db.logsActuator = logsActuactor
 
 db.ROLES = ['USER_ROLE', 'ADMIN_ROLE', 'MODERATOR_ROLE']
 
