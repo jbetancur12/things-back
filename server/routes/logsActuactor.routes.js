@@ -4,9 +4,9 @@ import logsActuatorController from '../controllers/logsActuator.controller.js'
 
 const router = express.Router()
 
-router.route('/api/logs-actuator').post(logsActuatorController.create)
+router.route('/api/logs-actuactor').post(logsActuatorController.create)
 router
-  .route('/api/logs-actuator/customer/:id')
+  .route('/api/logs-actuactor/customer')
   .get(logsActuatorController.getAllByCustomer)
 
 export default router
