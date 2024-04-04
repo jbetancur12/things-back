@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.route('/api/logs-actuactor').post(logsActuatorController.create)
 router
-  .route('/api/logs-actuactor/customer')
+  .route('/api/logs-actuactor/customer/:id')
   .get(logsActuatorController.getAllByCustomer)
 
 export default router
