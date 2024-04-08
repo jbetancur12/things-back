@@ -9,7 +9,9 @@ const Customer = db.customer
  */
 const getAllByCustomer = async (req, res) => {
   try {
-    const logsActuator = await LogsActuator.find({ customer: req.params.id })
+    const logsActuator = await LogsActuator.find({
+      customer: req.params.id
+    }).sort({ createdAt: -1 })
 
     res.json(logsActuator)
   } catch (err) {
