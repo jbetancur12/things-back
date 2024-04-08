@@ -12,15 +12,20 @@ const getAllByCustomer = async (req, res) => {
   const pageSize = parseInt(req.query.pageSize) || 10
 
   try {
+    const totalLogs = await LogsActuator.countDocuments({
+      customer: req.params.id
+    })
     const logsActuator = await LogsActuator.find({
       customer: req.params.id
     })
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize) // Saltar resultados según la página y tamaño de página
       .limit(pageSize) // Limitar la cantidad de resultados por página
-      .count() // Contar la cantidad de resultados
 
-    res.json(logsActuator)
+    res.json({
+      total: totalLogs,
+      logs: logsActuator
+    })
   } catch (err) {
     return res.status(400).json({
       error: dbErrorHandler.getErrorMessage(err)
