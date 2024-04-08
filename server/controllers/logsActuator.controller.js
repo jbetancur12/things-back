@@ -8,10 +8,16 @@ const Customer = db.customer
  * Middleware to handle requests for a specific logsActuator
  */
 const getAllByCustomer = async (req, res) => {
+  const page = parseInt(req.query.page) || 1
+  const pageSize = parseInt(req.query.pageSize) || 10
+
   try {
     const logsActuator = await LogsActuator.find({
       customer: req.params.id
-    }).sort({ createdAt: -1 })
+    })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * pageSize) // Saltar resultados según la página y tamaño de página
+      .limit(pageSize) // Limitar la cantidad de resultados por página
 
     res.json(logsActuator)
   } catch (err) {
