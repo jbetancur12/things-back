@@ -18,6 +18,7 @@ const getAllByCustomer = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize) // Saltar resultados según la página y tamaño de página
       .limit(pageSize) // Limitar la cantidad de resultados por página
+      .count() // Contar la cantidad de resultados
 
     res.json(logsActuator)
   } catch (err) {
